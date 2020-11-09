@@ -1,0 +1,23 @@
+name: ItemSorter
+main: me.clcondorcet.itemSorter.Main
+version: 1.2.8
+api-version: 1.16
+author: clcondorcet
+description: An item sorter for minecraft
+
+commands:
+  IS:
+    description: main command
+    usage: /IS
+  ItemSorter:
+    description: main command
+    usage: /ItemSorter
+    
+permissions:
+  is.admin:
+    description: Allow a player to access all systems
+    default: op
+
+  is.unlimitedBases:
+    description: Allow to create an infinite number of bases
+    default: op

@@ -1,0 +1,56 @@
+radius: 16
+verticalRadius: 80
+maxBases:
+  default: 5 #can be bypassed by the permission: "is.unlimitedBases"
+  others: #permissions
+    - "is.vip": 10
+    - "is.vipplus": 20
+    - "is.moderator": 100
+messages:
+  prefix: "&eI&cS&e> "
+  reload: "&2Complete!"
+  dontHavePermission: "&4You do not have permission!"
+  alreadyExistFilter: "&4This item already exist in the filter"
+  onlyOwnerTrust: "&2Only the owner can edit trusts"
+  filterInUse: "&4This filter is currently in use!"
+  filterNeedTrust: "&4Only trusts players can change filters"
+  baseDeleted: "&2ItemSorter deleted"
+  needOwnerToBreak: "&4Only the owner can break the base chest"
+  filterDeleted: "&2ItemFilter deleted"
+  needTrustBreakFilter: "&4Only trusts players can break filters"
+  depositDeleted: "&2ItemDeposit deleted"
+  needTrustBreakDeposit: "&4Only trusts players can break deposits"
+  onChestOrBarrel: "&4You must place the sign on a chest or on a barrel!"
+  onEnderChest: "&4You must place the sign on an ender chest!"
+  nameIncorrect:  "&4This name already exist or is incorrect :("
+  alreadyABase: "&4This is already a base!"
+  tooMuchBase: "&4You have too much base registered"
+  nameDoesNotExist: "&4This name doesn't exist"
+  notTrust: "&4You are not trust to this base"
+  notInRange: "&4This is not in range!"
+  baseCreated: "&2Base &6%name% &2is created!"
+  alreadyDepositorFilter: "&4This container is already a deposit or a filter!"
+inventory:
+  trustRemove: "&7Shift-Right-Click to remove this trust"
+  trustAdd: "&7Click to add to trusts"
+  trustName: "&6&lTrusts - &2"  #A big string may not work so be short please :D
+  filterRemove: "&7Shift-Right-Click to remove this item"
+  filterPriority: "&ePriority: "
+  filterTrashPriority: "&c[Trash] &ePriority: "
+  filterName: "&6&lFilter - &2"
+  prevEnable: "&2<<< Prev"
+  prevDisable: "&7<<< Prev"
+  nextEnable: "&2Next >>>"
+  nextDisable: "&7Next >>>"
+  AddFilterName: "&2&l+ ADD"
+  AddFilterLore:
+    - "&7To add an item to be filtered"
+    - "&7simply click on an item in your"
+    - "&7inventory."
+  AddTrustName: "&2&l+ ADD"
+  backName: "&cBack"
+sign:
+  prefix: "&6[&eItem&cSorter&6]"
+  input_is: "is"
+  input_isd: "isd"
+  input_isf: "isf"
