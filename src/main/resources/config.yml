@@ -6,6 +6,7 @@ maxBases:
     - "is.vip": 10
     - "is.vipplus": 20
     - "is.moderator": 100
+orderChestContent: true
 messages:
   prefix: "&eI&cS&e> "
   reload: "&2Complete!"
