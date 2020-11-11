@@ -26,7 +26,7 @@ public class CachedItems {
         if(prevE == null){
             prevE = new ItemStack(Material.SLIME_BALL);
             ItemMeta meta = prevE.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_prevEnable.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_prevEnable.replaceAll("&", "§"));
             prevE.setItemMeta(meta);
             prevE = Utilities.setNbt(prevE);
         }
@@ -37,7 +37,7 @@ public class CachedItems {
         if(prevD == null){
             prevD = new ItemStack(Main.versionHandler.getSnowBallMat());
             ItemMeta meta = prevD.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_prevDisable.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_prevDisable.replaceAll("&", "§"));
             prevD.setItemMeta(meta);
             prevD = Utilities.setNbt(prevD);
         }
@@ -48,7 +48,7 @@ public class CachedItems {
         if(nextE == null){
             nextE = new ItemStack(Material.SLIME_BALL);
             ItemMeta meta = nextE.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_nextEnable.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_nextEnable.replaceAll("&", "§"));
             nextE.setItemMeta(meta);
             nextE = Utilities.setNbt(nextE);
         }
@@ -59,7 +59,7 @@ public class CachedItems {
         if(nextD == null){
             nextD = new ItemStack(Main.versionHandler.getSnowBallMat());
             ItemMeta meta = nextD.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_nextDisable.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_nextDisable.replaceAll("&", "§"));
             nextD.setItemMeta(meta);
             nextD = Utilities.setNbt(nextD);
         }
@@ -70,7 +70,7 @@ public class CachedItems {
         if(plus == null){
             plus = new ItemStack(Main.versionHandler.getFireworkBallMat());
             ItemMeta meta = plus.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_AddTrustName.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_AddTrustName.replaceAll("&", "§"));
             plus.setItemMeta(meta);
             plus = Utilities.setNbt(plus);
         }
@@ -81,9 +81,9 @@ public class CachedItems {
         if(add == null){
             add = new ItemStack(Main.versionHandler.getFireworkBallMat());
             ItemMeta meta = add.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_AddFilterName.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_AddFilterName.replaceAll("&", "§"));
             ArrayList<String> lore = new ArrayList<>();
-            for(String st : Main.configManager.config.inv_AddFilterLore){
+            for(String st : Main.configManager.messages.inv_AddFilterLore){
                 if(!st.equals("")){
                     lore.add(st.replaceAll("&", "§"));
                 }
@@ -99,7 +99,7 @@ public class CachedItems {
         if(back == null){
             back = new ItemStack(Material.MAGMA_CREAM);
             ItemMeta meta = back.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_backName.replaceAll("&", "§"));
+            meta.setDisplayName(Main.configManager.messages.inv_backName.replaceAll("&", "§"));
             back.setItemMeta(meta);
             back = Utilities.setNbt(back);
         }

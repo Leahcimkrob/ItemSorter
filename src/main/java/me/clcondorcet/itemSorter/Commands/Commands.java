@@ -21,9 +21,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 			Main.configManager.loadConfigs();
 			Main.loadConfigs(s);
 			Main.cachedItems = new CachedItems();
-			s.sendMessage(Main.prefix + Main.configManager.config.msg_reload.replaceAll("&", "§"));
+			s.sendMessage(Main.prefix + Main.configManager.messages.msg_reload.replaceAll("&", "§"));
 		}else{
-			s.sendMessage(Main.prefix + Main.configManager.config.msg_dontHavePermission.replaceAll("&", "§"));
+			s.sendMessage(Main.prefix + Main.configManager.messages.msg_dontHavePermission.replaceAll("&", "§"));
 		}
 		return true;
 	}

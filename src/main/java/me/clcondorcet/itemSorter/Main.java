@@ -54,7 +54,7 @@ public class Main extends JavaPlugin{
 		versionChecker = new VersionChecker();
 		configManager = new ConfigManager();
 		configManager.loadConfigs();
-		prefix = Main.configManager.config.msg_prefix.replaceAll("&", "§");
+		prefix = Main.configManager.messages.msg_prefix.replaceAll("&", "§");
 		loadEvents();
 		loadCommands();
 		loadConfigs(null);

@@ -5,6 +5,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Utilities {
 
     public static ItemStack setNbt(ItemStack item){
@@ -61,5 +64,32 @@ public class Utilities {
 
     public static boolean isSign(Block block){
         return Main.versionHandler.isWallSign(block);
+    }
+
+    public static List<String> searchforsimilarity(String regex, List<String> from){
+        if(from.isEmpty()){
+            return from;
+        }
+        if(regex.equals("") || regex == null){
+            return from;
+        }
+        ArrayList<String> newlist = new ArrayList<String>();
+        String[] regexsplit = regex.split("");
+        for(String st : from){
+            st = "/" + st;
+            String[] fromsplit = st.split("");
+            boolean same = true;
+            for(int i = 0; i < regexsplit.length; ++i){
+                if(i < fromsplit.length && regexsplit[i].equalsIgnoreCase(fromsplit[i])){
+                }else{
+                    same = false;
+                    i = regexsplit.length;
+                }
+            }
+            if(same == true){
+                newlist.add(st);
+            }
+        }
+        return newlist;
     }
 }

@@ -48,28 +48,30 @@ public class Event implements Listener{
 
 	@EventHandler
 	public void onOpenInventory(InventoryOpenEvent e){
-		Chest[] chests = new Chest[2];
-		Object barrel = null;
-		boolean isBarrel = false;
-		if(e.getInventory().getHolder() instanceof DoubleChest){
-			chests[0] = (Chest) ((DoubleChest) e.getInventory().getHolder()).getLeftSide();
-			chests[1] = (Chest) ((DoubleChest) e.getInventory().getHolder()).getRightSide();
-		}else if(e.getInventory().getHolder() instanceof Chest){
-			chests = new Chest[1];
-			chests[0] = ((Chest) e.getInventory().getHolder());
-		}else if(Main.versionHandler.instanceOfBarel(e.getInventory().getHolder())){
-			isBarrel = true;
-			barrel = e.getInventory().getHolder();
-		}else{
-			return;
-		}
-		if(isBarrel){
-			String blockLoc = System.getLoc(((Barrel)barrel).getLocation());
-			reArrange((InventoryHolder) barrel, blockLoc);
-		}else{
-			for(Chest block : chests){
-				String blockLoc = System.getLoc(block.getLocation());
-				reArrange((InventoryHolder) block, blockLoc);
+		if(Main.configManager.config.orderChestContent){
+			Chest[] chests = new Chest[2];
+			Object barrel = null;
+			boolean isBarrel = false;
+			if(e.getInventory().getHolder() instanceof DoubleChest){
+				chests[0] = (Chest) ((DoubleChest) e.getInventory().getHolder()).getLeftSide();
+				chests[1] = (Chest) ((DoubleChest) e.getInventory().getHolder()).getRightSide();
+			}else if(e.getInventory().getHolder() instanceof Chest){
+				chests = new Chest[1];
+				chests[0] = ((Chest) e.getInventory().getHolder());
+			}else if(Main.versionHandler.instanceOfBarel(e.getInventory().getHolder())){
+				isBarrel = true;
+				barrel = e.getInventory().getHolder();
+			}else{
+				return;
+			}
+			if(isBarrel){
+				String blockLoc = System.getLoc(((Barrel)barrel).getLocation());
+				reArrange((InventoryHolder) barrel, blockLoc);
+			}else{
+				for(Chest block : chests){
+					String blockLoc = System.getLoc(block.getLocation());
+					reArrange((InventoryHolder) block, blockLoc);
+				}
 			}
 		}
 	}
@@ -170,10 +172,10 @@ public class Event implements Listener{
 						if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("is.admin")){
 							Main.bases.remove(sys);
 							sys.delete();
-							e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_baseDeleted.replaceAll("&", "§"));
+							e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_baseDeleted.replaceAll("&", "§"));
 						}else{
 							e.setCancelled(true);
-							e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_needOwnerToBreak.replaceAll("&", "§"));
+							e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_needOwnerToBreak.replaceAll("&", "§"));
 						}
 						return;
 					}
@@ -182,10 +184,10 @@ public class Event implements Listener{
 							if(sys.isTrust(e.getPlayer())){
 								sys.filters.remove(filter);
 								sys.save();
-								e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_filterDeleted.replaceAll("&", "§"));
+								e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_filterDeleted.replaceAll("&", "§"));
 							}else{
 								e.setCancelled(true);
-								e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_needTrustBreakFilter.replaceAll("&", "§"));
+								e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_needTrustBreakFilter.replaceAll("&", "§"));
 							}
 							return;
 						}
@@ -195,10 +197,10 @@ public class Event implements Listener{
 							if(sys.isTrust(e.getPlayer())){
 								sys.deposits.remove(deposit);
 								sys.save();
-								e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_depositDeleted.replaceAll("&", "§"));
+								e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_depositDeleted.replaceAll("&", "§"));
 							}else{
 								e.setCancelled(true);
-								e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_needTrustBreakDeposit.replaceAll("&", "§"));
+								e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_needTrustBreakDeposit.replaceAll("&", "§"));
 							}
 							return;
 						}
@@ -210,7 +212,7 @@ public class Event implements Listener{
 	
 	@EventHandler
     private void onSignChange(final SignChangeEvent e) {
-		if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_is + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_isf + "]")) {
+		if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
 			Sign sign = (Sign) e.getBlock().getState();
 			Block block = null;
 			try {
@@ -220,10 +222,10 @@ public class Event implements Listener{
 			}
 			if (!(block != null && (Utilities.isBDF(block.getType())))) {
 				e.getBlock().breakNaturally();
-				if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_is + "]")) {
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_onEnderChest.replaceAll("&", "§"));
+				if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]")) {
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_onEnderChest.replaceAll("&", "§"));
 				} else {
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_onChestOrBarrel.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_onChestOrBarrel.replaceAll("&", "§"));
 				}
 				return;
 			}
@@ -236,21 +238,21 @@ public class Event implements Listener{
 					break;
 				}
 			}
-			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_is + "]")) {
+			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]")) {
 				if (isSame || e.getLine(1).replaceAll(" ", "").equalsIgnoreCase("")) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_nameIncorrect.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_nameIncorrect.replaceAll("&", "§"));
 					return;
 				}
 				if (block.getType() != Material.ENDER_CHEST) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_onEnderChest.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_onEnderChest.replaceAll("&", "§"));
 					return;
 				}
 				for (System sys : Main.bases) {
 					if (System.getLoc(sys.baseLoc).equals(System.getLoc(block.getLocation()))) {
 						e.getBlock().breakNaturally();
-						e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_alreadyABase.replaceAll("&", "§"));
+						e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_alreadyABase.replaceAll("&", "§"));
 						return;
 					}
 				}
@@ -263,7 +265,7 @@ public class Event implements Listener{
 					}
 					if (Utilities.getMaxBases(e.getPlayer()) <= count) {
 						e.getBlock().breakNaturally();
-						e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_tooMuchBase.replaceAll("&", "§"));
+						e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_tooMuchBase.replaceAll("&", "§"));
 						return;
 					}
 				}
@@ -277,7 +279,7 @@ public class Event implements Listener{
 					public void run() {
 						try {
 							Sign signe = (Sign) loc.getBlock().getState();
-							signe.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+							signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
 							signe.setLine(1, "§b" + name);
 							signe.setLine(2, "§b= BASE =");
 							signe.setLine(3, "§7(" + e.getPlayer().getName() + ")");
@@ -286,24 +288,24 @@ public class Event implements Listener{
 						}
 					}
 				}.runTaskLater(Main.getInstance(), 3L);
-				e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_baseCreated.replaceAll("%name%", name).replaceAll("&", "§"));
+				e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_baseCreated.replaceAll("%name%", name).replaceAll("&", "§"));
 				return;
 			}
-			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_isf + "]")) {
+			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
 				final String name = e.getLine(1).replaceAll(" ", "");
 				if (!isSame || name.equalsIgnoreCase("")) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_nameDoesNotExist.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_nameDoesNotExist.replaceAll("&", "§"));
 					return;
 				}
 				if (!source.isTrust(e.getPlayer())) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_notTrust.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_notTrust.replaceAll("&", "§"));
 					return;
 				}
 				if (!Utilities.isDF(block.getType())) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_onChestOrBarrel.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_onChestOrBarrel.replaceAll("&", "§"));
 					return;
 				}
 				for(System sys : Main.bases){
@@ -332,12 +334,12 @@ public class Event implements Listener{
 					for(Location loc : locs){
 						if(sys.getDepositWithBlock(loc.getBlock()) != null){
 							e.getBlock().breakNaturally();
-							e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_alreadyDepositorFilter.replaceAll("&", "§"));
+							e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_alreadyDepositorFilter.replaceAll("&", "§"));
 							return;
 						}
 						if(sys.getFilterWithBlock(loc.getBlock()) != null){
 							e.getBlock().breakNaturally();
-							e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_alreadyDepositorFilter.replaceAll("&", "§"));
+							e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_alreadyDepositorFilter.replaceAll("&", "§"));
 							return;
 						}
 					}
@@ -349,10 +351,10 @@ public class Event implements Listener{
 				int z = source.baseLoc.getBlockZ() - block.getLocation().getBlockZ();
 				if (!(-radiusH <= x && radiusH >= x && -radiusH <= z && radiusH >= z && -radiusV <= y && radiusV >= y)) {
 					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_notInRange.replaceAll("&", "§"));
+					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_notInRange.replaceAll("&", "§"));
 					return;
 				}
-				if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.config.sign_prefix_input_isd + "]")) {
+				if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]")) {
 					final String owner = source.owner;
 					final Location loc = sign.getLocation();
 					new BukkitRunnable() {
@@ -360,7 +362,7 @@ public class Event implements Listener{
 						public void run() {
 							try {
 								Sign signe = (Sign) loc.getBlock().getState();
-								signe.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+								signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
 								signe.setLine(1, "§b" + name);
 								signe.setLine(2, "§b- Deposit -");
 								signe.setLine(3, "§7(" + owner + ")");
@@ -379,7 +381,7 @@ public class Event implements Listener{
 						public void run() {
 							try {
 								Sign signe = (Sign) loc.getBlock().getState();
-								signe.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+								signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
 								signe.setLine(1, "§b" + name);
 								signe.setLine(2, "§b- Filter -");
 								signe.setLine(3, "§7(" + owner + ")");
