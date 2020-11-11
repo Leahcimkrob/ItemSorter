@@ -9,7 +9,7 @@ commands:
   ItemSorter:
     description: main command
     usage: /ItemSorter
-    aliases: is
+    aliases: iso
     
 permissions:
   is.admin:

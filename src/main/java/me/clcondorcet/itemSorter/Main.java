@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -152,8 +153,11 @@ public class Main extends JavaPlugin{
 	}
 
 	public void loadCommands(){
-		//this.getCommand("IS").setExecutor(new Commands());
-		this.getCommand("ItemSorter").setExecutor(new Commands());
-		//this.getCommand("IS").setTabCompleter(new Commands());
+		PluginCommand command = this.getCommand("ItemSorter");
+		command.setExecutor(new Commands());
+		ArrayList<String> aliases = new ArrayList<>();
+		aliases.add("iso");
+		command.setAliases(aliases);
+		command.setTabCompleter(new Commands());
 	}
 }
