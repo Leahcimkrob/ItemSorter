@@ -33,7 +33,7 @@ public class Event implements Listener{
 	 * 
 	 * @author clcondorcet
 	 */
-	
+
 	@EventHandler
 	public void onMoveItem(final InventoryMoveItemEvent e){
 		new BukkitRunnable() {

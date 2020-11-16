@@ -70,16 +70,15 @@ public class Utilities {
         if(from.isEmpty()){
             return from;
         }
-        if(regex.equals("") || regex == null){
+        if(regex.equals("") || regex.equals(" ") || regex == null){
             return from;
         }
         ArrayList<String> newlist = new ArrayList<String>();
         String[] regexsplit = regex.split("");
         for(String st : from){
-            st = "/" + st;
             String[] fromsplit = st.split("");
             boolean same = true;
-            for(int i = 0; i < regexsplit.length; ++i){
+            for(int i = 0; i < regexsplit.length; i++){
                 if(i < fromsplit.length && regexsplit[i].equalsIgnoreCase(fromsplit[i])){
                 }else{
                     same = false;
@@ -91,5 +90,25 @@ public class Utilities {
             }
         }
         return newlist;
+    }
+
+    public static <T> T[] sort(T[] list, compareSup compare){
+        boolean isSorted = false;
+        while(!isSorted){
+            isSorted = true;
+            for(int i = 0; i < list.length-1; i++){
+                if(compare.compare(list[i], list[i+1])){
+                    isSorted = false;
+                    T temp = list[i];
+                    list[i] = list[i+1];
+                    list[i+1] = temp;
+                }
+            }
+        }
+        return list;
+    }
+
+    public interface compareSup{
+        boolean compare(Object a, Object b);
     }
 }

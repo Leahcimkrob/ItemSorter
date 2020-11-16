@@ -1,7 +1,7 @@
 name: ItemSorter
 main: me.clcondorcet.itemSorter.Main
 version: 1.2.8
-api-version: 1.16
+api-version: 1.13
 author: clcondorcet
 description: An item sorter for minecraft
 
@@ -12,10 +12,148 @@ commands:
     aliases: iso
     
 permissions:
-  is.admin:
+  itemsorter.*:
+    description: all permissions of the plugin
+    default: op
+    children:
+      itemsorter.admin: true
+      itemsorter.unlimitedbases: true
+      itemsorter.command.*: true
+
+  itemsorter.admin:
     description: Allow a player to access all systems
     default: op
 
-  is.unlimitedBases:
+  itemsorter.unlimitedBases:
     description: Allow to create an infinite number of bases
+    default: op
+
+  itemsorter.command.*:
+    description: all commands of the plugin
+    default: op
+    children:
+      itemsorter.command.reload: true
+      itemsorter.command.help: true
+      itemsorter.command.list: true
+      itemsorter.command.base: true
+      itemsorter.command.base.*: true
+
+
+  itemsorter.command.reload:
+    description: Allow you to reload
+    default: op
+
+  itemsorter.command.help:
+    description: Allow you to have some help
+    default: true
+
+  itemsorter.command.list:
+    description: Allow you to get the list of bases
+    default: op
+
+  itemsorter.command.base:
+    description: Allow you to get details on a base
+    default: true
+
+  itemsorter.command.base.*:
+    description: all options of base
+    default: op
+    children:
+      itemsorter.command.base.trust: true
+      itemsorter.command.base.other: true
+      itemsorter.command.base.coodinates: true
+      itemsorter.command.base.coodinates.trust: true
+      itemsorter.command.base.coodinates.other: true
+
+  itemsorter.command.base.trust:
+    description: Allow trust member to see base detail
+    default: true
+
+  itemsorter.command.base.other:
+    description: Allow you to see base detail of others
+    default: true
+
+  itemsorter.command.base.coodinates:
+    description: Allow you to get coordinates of a base
+    default: true
+
+  itemsorter.command.base.coodinates.trust:
+    description: Allow you to get coordinates of bases where you are trust
+    default: true
+
+  itemsorter.command.base.coodinates.other:
+    description: Allow you to get coordinates of bases of others
+    default: op
+
+  itemsorter.command.filters:
+    description: Allow you to get the list of filters of a base
+    default: true
+
+  itemsorter.command.filters.*:
+    description: all options of filters
+    default: op
+    children:
+      itemsorter.command.filters.trust: true
+      itemsorter.command.filters.other: true
+      itemsorter.command.filters.coodinates: true
+      itemsorter.command.filters.coodinates.trust: true
+      itemsorter.command.filters.coodinates.other: true
+
+  itemsorter.command.filters.trust:
+    description: Allow trust member to see filters details
+    default: true
+
+  itemsorter.command.filters.other:
+    description: Allow you to see filters details of others
+    default: true
+
+  itemsorter.command.filters.coodinates:
+    description: Allow you to get coordinates of your filters
+    default: true
+
+  itemsorter.command.filters.coodinates.trust:
+    description: Allow you to get coordinates of filters where you are trust
+    default: true
+
+  itemsorter.command.filters.coodinates.other:
+    description: Allow you to get coordinates of filters from all bases
+    default: op
+
+  itemsorter.command.deposits:
+    description: Allow you to get the list of deposits of a base
+    default: true
+
+  itemsorter.command.deposits.*:
+    description: all options of deposits
+    default: op
+    children:
+      itemsorter.command.deposits.trust: true
+      itemsorter.command.deposits.other: true
+
+  itemsorter.command.deposits.trust:
+    description: Allow trust member to see deposits details
+    default: true
+
+  itemsorter.command.deposits.other:
+    description: Allow you to see deposits details of others
+    default: op
+
+  itemsorter.command.glow:
+    description: Allow you to see blocs through walls
+    default: true
+
+  itemsorter.command.glow.*:
+    description: Allow you to see blocs through walls
+    default: op
+    children:
+      itemsorter.command.glow: true
+      itemsorter.command.glow.trust: true
+      itemsorter.command.glow.other: true
+
+  itemsorter.command.glow.trut:
+    description: Allow you to see blocs through walls
+    default: true
+
+  itemsorter.command.glow.other:
+    description: Allow you to see blocs through walls
     default: op

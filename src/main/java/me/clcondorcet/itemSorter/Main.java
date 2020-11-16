@@ -40,7 +40,7 @@ public class Main extends JavaPlugin{
 	public static ConfigManager configManager;
 	public static HashMap<Player, Object[]> inFilter = new HashMap<>();
 	public static HashMap<Player, Object[]> inSystem = new HashMap<>();
-	
+
 	public static Plugin getInstance(){
 		return plugin;
 	}
