@@ -9,19 +9,23 @@ import me.clcondorcet.itemSorter.Objects.Filter;
 import me.clcondorcet.itemSorter.Objects.System;
 import me.clcondorcet.itemSorter.Utilities;
 import me.clcondorcet.itemSorter.VersionChecker;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -33,6 +37,9 @@ public class Event implements Listener{
 	 * 
 	 * @author clcondorcet
 	 */
+
+	public static HashMap<Player, System> autofilters = new HashMap<>();
+	public static HashMap<Player, System> autodeposits = new HashMap<>();
 
 	@EventHandler
 	public void onMoveItem(final InventoryMoveItemEvent e){
@@ -212,7 +219,7 @@ public class Event implements Listener{
 	
 	@EventHandler
     private void onSignChange(final SignChangeEvent e) {
-		if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
+		if (autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer()) || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
 			Sign sign = (Sign) e.getBlock().getState();
 			Block block = null;
 			try {
@@ -231,11 +238,19 @@ public class Event implements Listener{
 			}
 			boolean isSame = false;
 			System source = null;
-			for (System sys : Main.bases) {
-				if (sys.name.equals(e.getLine(1).replaceAll(" ", ""))) {
-					isSame = true;
-					source = sys;
-					break;
+			if(autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer())){
+				if(autofilters.containsKey(e.getPlayer())){
+					source = autofilters.get(e.getPlayer());
+				}else{
+					source = autodeposits.get(e.getPlayer());
+				}
+			}else{
+				for (System sys : Main.bases) {
+					if (sys.name.equals(e.getLine(1).replaceAll(" ", ""))) {
+						isSame = true;
+						source = sys;
+						break;
+					}
 				}
 			}
 			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]")) {
@@ -291,12 +306,14 @@ public class Event implements Listener{
 				e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_baseCreated.replaceAll("%name%", name).replaceAll("&", "§"));
 				return;
 			}
-			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
+			if (autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer()) || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
 				final String name = e.getLine(1).replaceAll(" ", "");
-				if (!isSame || name.equalsIgnoreCase("")) {
-					e.getBlock().breakNaturally();
-					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_nameDoesNotExist.replaceAll("&", "§"));
-					return;
+				if(!(autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer()))){
+					if (!isSame || name.equalsIgnoreCase("")) {
+						e.getBlock().breakNaturally();
+						e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_nameDoesNotExist.replaceAll("&", "§"));
+						return;
+					}
 				}
 				if (!source.isTrust(e.getPlayer())) {
 					e.getBlock().breakNaturally();
@@ -354,16 +371,17 @@ public class Event implements Listener{
 					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_notInRange.replaceAll("&", "§"));
 					return;
 				}
-				if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]")) {
+				if (autodeposits.containsKey(e.getPlayer()) || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]")) {
 					final String owner = source.owner;
 					final Location loc = sign.getLocation();
+					System finalSource = source;
 					new BukkitRunnable() {
 						@Override
 						public void run() {
 							try {
 								Sign signe = (Sign) loc.getBlock().getState();
 								signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
-								signe.setLine(1, "§b" + name);
+								signe.setLine(1, "§b" + finalSource.name);
 								signe.setLine(2, "§b- Deposit -");
 								signe.setLine(3, "§7(" + owner + ")");
 								signe.update();
@@ -376,13 +394,14 @@ public class Event implements Listener{
 				} else {
 					final String owner = source.owner;
 					final Location loc = sign.getLocation();
+					System finalSource1 = source;
 					new BukkitRunnable() {
 						@Override
 						public void run() {
 							try {
 								Sign signe = (Sign) loc.getBlock().getState();
 								signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
-								signe.setLine(1, "§b" + name);
+								signe.setLine(1, "§b" + finalSource1.name);
 								signe.setLine(2, "§b- Filter -");
 								signe.setLine(3, "§7(" + owner + ")");
 								signe.update();
@@ -392,6 +411,22 @@ public class Event implements Listener{
 					}.runTaskLater(Main.getInstance(), 3L);
 					source.filters.add(new Filter(block.getLocation(), sign.getLocation(), System.getNewPriority(source.filters)));
 					source.save();
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	private void onPlaceEvent(BlockPlaceEvent e) {
+		if(autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer())){
+			if(!e.isCancelled()){
+				if(Main.versionHandler.isWallSign(e.getBlockPlaced())){
+					Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
+						@Override
+						public void run() {
+							e.getPlayer().closeInventory();
+						}
+					}, 0);
 				}
 			}
 		}
@@ -410,6 +445,12 @@ public class Event implements Listener{
 
 			}
 		}
+	}
+
+	@EventHandler
+	public void onQuitEvent(PlayerQuitEvent e){
+		autofilters.remove(e.getPlayer());
+		autodeposits.remove(e.getPlayer());
 	}
 
 	@EventHandler

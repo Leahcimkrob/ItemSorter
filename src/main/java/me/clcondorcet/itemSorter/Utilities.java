@@ -10,9 +10,9 @@ import java.util.List;
 
 public class Utilities {
 
+    /*
     public static ItemStack setNbt(ItemStack item){
         ItemStack nbtItem = item;
-        /*
         try{
             Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + Main.version + ".inventory.CraftItemStack");
             Object itemb = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(craftItemStackClass, nbtItem);
@@ -26,7 +26,7 @@ public class Utilities {
             nbtItem = (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", itemb.getClass()).invoke(craftItemStackClass, itemb);
         }catch (Exception e){
             Bukkit.getConsoleSender().sendMessage("Error on nbt's");
-        }*/
+        }
         return nbtItem;
     }
 
@@ -39,7 +39,7 @@ public class Utilities {
         }catch (Exception ex){
             return true;
         }
-    }
+    }*/
 
     public static int getMaxBases(Player p){
         int max = Main.configManager.config.maxBases_default;

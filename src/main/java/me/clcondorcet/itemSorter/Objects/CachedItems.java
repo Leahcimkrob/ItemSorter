@@ -1,7 +1,6 @@
 package me.clcondorcet.itemSorter.Objects;
 
 import me.clcondorcet.itemSorter.Main;
-import me.clcondorcet.itemSorter.Utilities;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,7 +27,6 @@ public class CachedItems {
             ItemMeta meta = prevE.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_prevEnable.replaceAll("&", "§"));
             prevE.setItemMeta(meta);
-            prevE = Utilities.setNbt(prevE);
         }
         return prevE;
     }
@@ -39,7 +37,6 @@ public class CachedItems {
             ItemMeta meta = prevD.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_prevDisable.replaceAll("&", "§"));
             prevD.setItemMeta(meta);
-            prevD = Utilities.setNbt(prevD);
         }
         return prevD;
     }
@@ -50,7 +47,6 @@ public class CachedItems {
             ItemMeta meta = nextE.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_nextEnable.replaceAll("&", "§"));
             nextE.setItemMeta(meta);
-            nextE = Utilities.setNbt(nextE);
         }
         return nextE;
     }
@@ -61,7 +57,6 @@ public class CachedItems {
             ItemMeta meta = nextD.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_nextDisable.replaceAll("&", "§"));
             nextD.setItemMeta(meta);
-            nextD = Utilities.setNbt(nextD);
         }
         return nextD;
     }
@@ -72,7 +67,6 @@ public class CachedItems {
             ItemMeta meta = plus.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_AddTrustName.replaceAll("&", "§"));
             plus.setItemMeta(meta);
-            plus = Utilities.setNbt(plus);
         }
         return plus;
     }
@@ -90,7 +84,6 @@ public class CachedItems {
             }
             meta.setLore(lore);
             add.setItemMeta(meta);
-            add = Utilities.setNbt(add);
         }
         return add;
     }
@@ -101,7 +94,6 @@ public class CachedItems {
             ItemMeta meta = back.getItemMeta();
             meta.setDisplayName(Main.configManager.messages.inv_backName.replaceAll("&", "§"));
             back.setItemMeta(meta);
-            back = Utilities.setNbt(back);
         }
         return back;
     }

@@ -26,7 +26,7 @@ public class ConfigManager {
 		Plugin plug = Main.getInstance();
 		load(plug.getDataFolder(), "config.yml");
 		config = new Config(getConfig("config.yml"), loadDirect(new File(Main.getInstance().getDataFolder(), "temp.yml"), "config.yml"));
-		List<String> msgFiles = Arrays.asList("EN", "FR");
+		List<String> msgFiles = Arrays.asList("EN", "FR", "DE");
 		boolean isOther = true;
 		for(String st : msgFiles){
 			if(config.language.equalsIgnoreCase(st)){

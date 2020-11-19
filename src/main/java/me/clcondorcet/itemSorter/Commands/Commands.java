@@ -1,5 +1,6 @@
 package me.clcondorcet.itemSorter.Commands;
 
+import me.clcondorcet.itemSorter.Events.Event;
 import me.clcondorcet.itemSorter.Main;
 import me.clcondorcet.itemSorter.Objects.CachedItems;
 import me.clcondorcet.itemSorter.Objects.Deposit;
@@ -14,13 +15,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -28,6 +29,8 @@ import java.util.*;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
+	public static HashMap<Player, ArrayList<String>> glowMap = new HashMap<>();
+	public static HashMap<Player, BukkitTask> glowTasks = new HashMap<>();
 
 	@Override
 	public boolean onCommand(CommandSender s, Command cmd, String label, String[] args) {
@@ -42,7 +45,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 				sendBasePermhs(s, s.hasPermission("itemsorter.command.filters"), msg.cmd_help_filters.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " filters ");
 				sendBasePermhs(s, s.hasPermission("itemsorter.command.deposits"), msg.cmd_help_deposits.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " deposits ");
 				sendBasePermhs(s, s.hasPermission("itemsorter.command.glow") && Main.versionHandler.isGlowAvailable(), msg.cmd_help_glow.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " glow ");
+				sendBasePermhs(s, s.hasPermission("itemsorter.command.autosign"), msg.cmd_help_autosign.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " autosign ");
 				sendBasePermhs(s, s.hasPermission("itemsorter.command.reload"), msg.cmd_help_reload.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " reload");
+				sendBasePermhs(s, s.hasPermission("itemsorter.command.setowner"), msg.cmd_help_setOwner.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " setOwner ");
 				sendBase(s, msg.cmd_help_space2);
 				sendBase(s, msg.cmd_help_footer);
 			}else{
@@ -141,6 +146,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								Player p = (Player)s;
 								if(!system.owner.equals(p.getName())){
 									if(!system.isTrust(p) || !s.hasPermission("itemsorter.command.base.trust")){
+										s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
 										return true;
 									}
 								}
@@ -149,10 +155,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 						boolean displayLoc = false;
 						if(s instanceof Player){
 							if(!s.hasPermission("itemsorter.command.base.coodinates.other")){
-								if(s.hasPermission("itemsorter.command.base.coodinates.trust") && system.trusts.contains((Player) s)){
-									displayLoc = true;
-								}else if(s.hasPermission("itemsorter.command.base.coodinates") && system.owner.equals(((Player)s).getName())){
-									displayLoc = true;
+								if(system.trusts.contains(((Player) s).getName())){
+									if(s.hasPermission("itemsorter.command.base.coodinates.trust")){
+										displayLoc = true;
+									}
+								}else if(system.owner.equals(((Player)s).getName())){
+									if(s.hasPermission("itemsorter.command.base.coodinates")){
+										displayLoc = true;
+									}
 								}
 							}else{
 								displayLoc =  true;
@@ -170,7 +180,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						boolean canGlow = false;
 						if(s instanceof Player){
 							if(!s.hasPermission("itemsorter.command.glow.other")){
-								if(s.hasPermission("itemsorter.command.glow.trust") && system.trusts.contains((Player) s)){
+								if(s.hasPermission("itemsorter.command.glow.trust") && system.trusts.contains(((Player) s).getName())){
 									canGlow = true;
 								}else if(s.hasPermission("itemsorter.command.glow") && system.owner.equals(((Player)s).getName())){
 									canGlow = true;
@@ -183,7 +193,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							TextComponent sourceAction = new TextComponent(fixColors(msg.cmd_base_actions));
 							TextComponent glowAction = new TextComponent(fixColors(msg.cmd_base_actionGlow));
 							HoverEvent glowActionh = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(fixColors(msg.cmd_base_actionGlowHover))});
-							ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow base " + system.name);
+							ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow base " + system.name + " false");
 							glowAction.setHoverEvent(glowActionh);
 							glowAction.setClickEvent(glowActionc);
 							sourceAction.addExtra(glowAction);
@@ -265,7 +275,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 						ArrayList<Filter> filters = new ArrayList<>();
 						for(Filter fil : system.filters){
-							if((filter.equals("Trash") && fil.isTrash) || (!filter.equals("Trash") && fil.materials.keySet().contains(Material.valueOf(filter)))){
+							if((filter.equals("Trash") && fil.isTrash) || (!filter.equals("Trash") && fil.materials.containsKey(Material.valueOf(filter)))){
 								filters.add(fil);
 							}
 						}
@@ -273,10 +283,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 							boolean displayLoc = false;
 							if(s instanceof Player){
 								if(!s.hasPermission("itemsorter.command.filters.coodinates.other")){
-									if(s.hasPermission("itemsorter.command.filters.coodinates.trust") && system.trusts.contains((Player) s)){
-										displayLoc = true;
-									}else if(s.hasPermission("itemsorter.command.filters.coodinates") && system.owner.equals(((Player)s).getName())){
-										displayLoc = true;
+									if(system.trusts.contains(((Player) s).getName())){
+										if(s.hasPermission("itemsorter.command.filters.coodinates.trust")){
+											displayLoc = true;
+										}
+									}else if(system.owner.equals(((Player)s).getName())){
+										if(s.hasPermission("itemsorter.command.filters.coodinates")){
+											displayLoc = true;
+										}
 									}
 								}else{
 									displayLoc =  true;
@@ -289,7 +303,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							if(max < page) {
 								page = max;
 							}
-							Filter sortedFilters[] = new Filter[filters.size()];
+							Filter[] sortedFilters = new Filter[filters.size()];
 							sortedFilters = filters.toArray(sortedFilters);
 							Material mat = null;
 							if(filter.equals("Trash")){
@@ -303,15 +317,19 @@ public class Commands implements CommandExecutor, TabCompleter {
 							if(filter.equals("Trash")){
 								sendBase(s, msg.cmd_filters_option.replaceAll("%option%", filter));
 							}else{
-								sendBasehc(s, msg.cmd_filters_option.replaceAll("%option%", filter), msg.cmd_filters_hoverOption, "/" + label + " filters " + system.name);
+								sendBasehc(s, msg.cmd_filters_option.replaceAll("%option%", filter), msg.cmd_filters_hoverOption, "/" + label + " filters " + system.name + " false");
 							}
 							boolean canGlow = false;
 							if(s instanceof Player){
 								if(!s.hasPermission("itemsorter.command.glow.other")){
-									if(s.hasPermission("itemsorter.command.glow.trust") && system.trusts.contains((Player) s)){
-										canGlow = true;
-									}else if(s.hasPermission("itemsorter.command.glow") && system.owner.equals(((Player)s).getName())){
-										canGlow = true;
+									if(system.trusts.contains(((Player) s).getName())){
+										if(s.hasPermission("itemsorter.command.glow.trust")){
+											canGlow = true;
+										}
+									}else if(system.owner.equals(((Player)s).getName())){
+										if(s.hasPermission("itemsorter.command.glow")){
+											canGlow = true;
+										}
 									}
 								}else{
 									canGlow =  true;
@@ -321,7 +339,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								TextComponent sourceAction = new TextComponent(fixColors(msg.cmd_filters_actions));
 								TextComponent glowAction = new TextComponent(fixColors(msg.cmd_filters_actionGlow));
 								HoverEvent glowActionh = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(fixColors(msg.cmd_filters_actionGlowAllHover))});
-								ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow filters " + system.name + " " + filter);
+								ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow filters " + system.name + " " + filter + " false");
 								glowAction.setHoverEvent(glowActionh);
 								glowAction.setClickEvent(glowActionc);
 								sourceAction.addExtra(glowAction);
@@ -341,7 +359,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								if(Main.versionHandler.isGlowAvailable() && canGlow){
 									TextComponent glowAction = new TextComponent(fixColors(msg.cmd_filters_actionGlow));
 									HoverEvent glowActionh = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(fixColors(msg.cmd_filters_actionGlowHover))});
-									ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow filters " + system.name + " " + filter + " " + (sortedFilters[i].isTrash ? sortedFilters[i].trashPriority : sortedFilters[i].materials.get(mat)));
+									ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow filters " + system.name + " " + filter + " " + (sortedFilters[i].isTrash ? sortedFilters[i].trashPriority : sortedFilters[i].materials.get(mat)) + " false");
 									glowAction.setHoverEvent(glowActionh);
 									glowAction.setClickEvent(glowActionc);
 									sourceAction.addExtra(glowAction);
@@ -409,10 +427,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 							boolean canGlow = false;
 							if(s instanceof Player){
 								if(!s.hasPermission("itemsorter.command.glow.other")){
-									if(s.hasPermission("itemsorter.command.glow.trust") && system.trusts.contains((Player) s)){
-										canGlow = true;
-									}else if(s.hasPermission("itemsorter.command.glow") && system.owner.equals(((Player)s).getName())){
-										canGlow = true;
+									if(system.trusts.contains(((Player) s).getName())){
+										if(s.hasPermission("itemsorter.command.glow.trust")){
+											canGlow = true;
+										}
+									}else if(system.owner.equals(((Player)s).getName())){
+										if(s.hasPermission("itemsorter.command.glow")){
+											canGlow = true;
+										}
 									}
 								}else{
 									canGlow =  true;
@@ -422,7 +444,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								TextComponent sourceAction = new TextComponent(fixColors(msg.cmd_deposits_actions));
 								TextComponent glowAction = new TextComponent(fixColors(msg.cmd_deposits_actionGlow));
 								HoverEvent glowActionh = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(fixColors(msg.cmd_deposits_actionGlowAllHover))});
-								ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow deposits " + system.name);
+								ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow deposits " + system.name + " false");
 								glowAction.setHoverEvent(glowActionh);
 								glowAction.setClickEvent(glowActionc);
 								sourceAction.addExtra(glowAction);
@@ -440,7 +462,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								if(Main.versionHandler.isGlowAvailable() && canGlow){
 									TextComponent glowAction = new TextComponent(fixColors(msg.cmd_deposits_actionGlow));
 									HoverEvent glowActionh = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(fixColors(msg.cmd_deposits_actionGlowHover))});
-									ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow deposits " + system.name + " " + i);
+									ClickEvent glowActionc = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + label + " glow deposits " + system.name + " " + i + " false");
 									glowAction.setHoverEvent(glowActionh);
 									glowAction.setClickEvent(glowActionc);
 									sourceAction.addExtra(glowAction);
@@ -461,150 +483,275 @@ public class Commands implements CommandExecutor, TabCompleter {
 				s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
 			}
 		}else if(args[0].equalsIgnoreCase("glow")) {
-			if(s.hasPermission("itemsorter.command.glow")){
-				if(Main.versionHandler.isGlowAvailable()){
-					if(s instanceof Player){
-						Player p = (Player)s;
-						if(args.length != 1){
-							if(args.length != 2){
+			if (s.hasPermission("itemsorter.command.glow")) {
+				if (Main.versionHandler.isGlowAvailable()) {
+					if (s instanceof Player) {
+						Player p = (Player) s;
+						if (args.length != 1) {
+							if (args.length != 2) {
 								System system = null;
-								for(System sys : Main.bases){
-									if(sys.name.equals(args[2])){
+								for (System sys : Main.bases) {
+									if (sys.name.equals(args[2])) {
 										system = sys;
 										break;
 									}
 								}
-								if(system != null){
-									if(system.baseLoc.getWorld().getName().equals(p.getLocation().getWorld().getName())){
-										if(!s.hasPermission("itemsorter.command.glow.other")){
-											if(!s.hasPermission("itemsorter.command.glow") || !system.owner.equals(p.getName())){
-												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_notOwner));
-												return true;
-											}
-											if(!s.hasPermission("itemsorter.command.glow.trust") || !system.trusts.contains(p.getName())){
+								if (system != null) {
+									if (system.baseLoc.getWorld().getName().equals(p.getLocation().getWorld().getName())) {
+										if (!s.hasPermission("itemsorter.command.glow.other")) {
+											if (system.owner.equals(p.getName())) {
+												if (!s.hasPermission("itemsorter.command.glow")) {
+													s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
+													return true;
+												}
+											} else if (system.trusts.contains(p.getName())) {
+												if (!s.hasPermission("itemsorter.command.glow.trust")) {
+													s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_notOwner));
+													return true;
+												}
+											} else {
 												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_notTrust));
 												return true;
 											}
 										}
-										if(args[1].equalsIgnoreCase("base")){
-											addGlow(p, system.baseLoc.clone().add(0.5d, 0d, 0.5d), true);
-											s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
-										}else if(args[1].equalsIgnoreCase("filters")){
-											if(args.length != 3){
+										if (args[1].equalsIgnoreCase("base")) {
+											addGlow(p, system.baseLoc.clone().add(0.5d, 0d, 0.5d), true, 0);
+											if ((!(args.length > 3) || !args[3].equalsIgnoreCase("false"))) {
+												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+											}
+										} else if (args[1].equalsIgnoreCase("filters")) {
+											if (args.length != 3) {
 												String filter = args[3];
-												if(!filter.equalsIgnoreCase("Trash")){
-													try{
+												if (!filter.equalsIgnoreCase("Trash")) {
+													try {
 														filter = Material.valueOf(filter.toUpperCase()).toString();
-													}catch(Exception ex){
+													} catch (Exception ex) {
 														filter = "Trash";
 													}
-												}else{
+												} else {
 													filter = "Trash";
 												}
 												ArrayList<Filter> filters = new ArrayList<>();
-												for(Filter fil : system.filters){
-													if((filter.equals("Trash") && fil.isTrash) || (!filter.equals("Trash") && fil.materials.keySet().contains(Material.valueOf(filter)))){
+												for (Filter fil : system.filters) {
+													if ((filter.equals("Trash") && fil.isTrash) || (!filter.equals("Trash") && fil.materials.keySet().contains(Material.valueOf(filter)))) {
 														filters.add(fil);
 													}
 												}
-												if(args.length > 4){
+												if (args.length > 4 && !args[4].equalsIgnoreCase("false")) {
 													int id = -1;
-													try{
+													try {
 														id = Integer.parseInt(args[4]);
-														if(id < 0){
-															id= -1;
+														if (id < 0) {
+															id = -1;
 														}
-													}catch(Exception ex){
+													} catch (Exception ex) {
 														id = -1;
 													}
-													if(id != -1){
+													if (id != -1) {
 														Filter fil = null;
-														for(Filter fils : filters){
+														for (Filter fils : filters) {
 															int o = 0;
-															if(fils.isTrash){
+															if (fils.isTrash) {
 																o = fils.trashPriority;
-															}else{
+															} else {
 																o = fils.materials.getOrDefault(Material.valueOf(filter), -1);
 															}
-															if(o != -1){
-																if(id == o){
+															if (o != -1) {
+																if (id == o) {
 																	fil = fils;
 																	break;
 																}
 															}
 														}
-														if(fil == null){
+														if (fil == null) {
 															s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noBlocsFound));
 															return true;
-														}else{
-															addGlow(p, fil.loc.clone().add(0.5d, 0d, 0.5d), true);
-															s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+														} else {
+															addGlow(p, fil.loc.clone().add(0.5d, 0d, 0.5d), true, 0);
+															if ((!(args.length > 5) || !args[5].equalsIgnoreCase("false"))) {
+																s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+															}
 															return true;
 														}
-													}else{
+													} else {
 														s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noBlocsFound));
 														return true;
 													}
 												}
 												ArrayList<Location> locs = new ArrayList<>();
-												for(Filter fil : filters){
+												for (Filter fil : filters) {
 													locs.add(fil.loc.clone().add(0.5d, 0d, 0.5d));
 												}
 												addGlow(p, locs);
-												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
-											}else{
+												if ((!(args.length > 4) || !args[4].equalsIgnoreCase("false"))) {
+													s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+												}
+											} else {
 												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noOptionFilter));
 											}
-										}else if(args[1].equalsIgnoreCase("deposits")){
-											if(args.length > 3){
+										} else if (args[1].equalsIgnoreCase("deposits")) {
+											if (args.length > 3 && !args[3].equalsIgnoreCase("false")) {
 												int id = -1;
-												try{
+												try {
 													id = Integer.parseInt(args[3]);
-													if(id < 0){
-														id= -1;
+													if (id < 0) {
+														id = -1;
 													}
-												}catch(Exception ex){
+												} catch (Exception ex) {
 													id = -1;
 												}
-												if(id != -1){
-													if(system.deposits.size() <= id){
+												if (id != -1) {
+													if (system.deposits.size() <= id) {
 														s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noBlocsFound));
-													}else{
-														addGlow(p, system.deposits.get(id).loc.clone().add(0.5d, 0d, 0.5d), true);
-														s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+													} else {
+														addGlow(p, system.deposits.get(id).loc.clone().add(0.5d, 0d, 0.5d), true, 0);
+														if ((!(args.length > 4) || !args[4].equalsIgnoreCase("false"))) {
+															s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+														}
 													}
 													return true;
-												}else{
+												} else {
 													s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noBlocsFound));
 													return true;
 												}
 											}
 											ArrayList<Location> locs = new ArrayList<>();
-											for(Deposit dep : system.deposits){
+											for (Deposit dep : system.deposits) {
 												locs.add(dep.loc.clone().add(0.5d, 0d, 0.5d));
 											}
 											addGlow(p, locs);
-											s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
-										}else{
+											if ((!(args.length > 3) || !args[3].equalsIgnoreCase("false"))) {
+												s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_complete));
+											}
+										} else {
 											s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noOption));
 										}
-									}else{
+									} else {
 										s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_notInSameWorld));
 									}
-								}else{
+								} else {
 									s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_baseNotExist).replaceAll("%base%", args[2]));
 								}
-							}else{
+							} else {
 								s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noBase));
 							}
-						}else{
+						} else {
 							s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_noOption));
 						}
-					}else{
+					} else {
 						s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_notPlayer));
 					}
-				}else{
+				} else {
 					s.sendMessage(Main.prefix + fixColors(msg.cmd_glow_lowerVersion));
+				}
+			} else {
+				s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
+			}
+		}else if(args[0].equalsIgnoreCase("autosign")) {
+			if(s instanceof Player){
+				if(s.hasPermission("itemsorter.command.autosign")){
+					if(args.length > 1){
+						if(args[1].equalsIgnoreCase("deposit") || args[1].equalsIgnoreCase("filter")){
+							if(args.length > 2){
+								System system = null;
+								for (System sys : Main.bases) {
+									if (sys.name.equals(args[2])) {
+										system = sys;
+										break;
+									}
+								}
+								if(system != null){
+									if(!s.hasPermission("itemsorter.admin")){
+										if(!system.owner.equals(((Player)s).getName())){
+											if(!system.isTrust((Player)s)){
+												s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_notTrust));
+												return true;
+											}
+										}
+									}
+									if(args[1].equalsIgnoreCase("deposit")){
+										Event.autofilters.remove((Player)s);
+										Event.autodeposits.put((Player)s, system);
+									}else{
+										Event.autodeposits.remove((Player)s);
+										Event.autofilters.put((Player)s, system);
+									}
+									s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_complete).replaceAll("%cmd%", label));
+								}else{
+									s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_baseNotExist).replaceAll("%base%", args[2]));
+								}
+							}else{
+								s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_noBase));
+							}
+						}else if(args[1].equalsIgnoreCase("stop")) {
+							Event.autofilters.remove((Player)s);
+							Event.autodeposits.remove((Player)s);
+							s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_stop));
+						}else{
+							s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_noOption));
+						}
+					}else{
+						s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_noOption));
+					}
+				}else{
+					s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
+				}
+			}else{
+				s.sendMessage(Main.prefix + fixColors(msg.cmd_autosign_notPlayer));
+			}
+		}else if(args[0].equalsIgnoreCase("setOwner")) {
+			if(s.hasPermission("itemsorter.command.setowner")){
+				if(args.length > 1){
+					if(args.length > 2) {
+						System system = null;
+						for (System sys : Main.bases) {
+							if (sys.name.equals(args[1])) {
+								system = sys;
+								break;
+							}
+						}
+						if(system != null){
+							if(!args[2].equals(system.owner)){
+								system.owner = args[2];
+								try{
+									Sign sign = (Sign) system.sign.getBlock().getState();
+									sign.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
+									sign.setLine(1, "§b" + system.name);
+									sign.setLine(2, "§b= BASE =");
+									sign.setLine(3, "§7(" + system.owner + ")");
+									sign.update();
+								}catch(Exception ignored){}
+								for(Filter fil : system.filters){
+									try{
+										Sign signf = (Sign) fil.sign.getBlock().getState();
+										signf.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
+										signf.setLine(1, "§b" + system.name);
+										signf.setLine(2, "§b- Filter -");
+										signf.setLine(3, "§7(" + system.owner + ")");
+										signf.update();
+									}catch(Exception ignored){}
+								}
+								for(Deposit depo : system.deposits){
+									try{
+										Sign signd = (Sign) depo.sign.getBlock().getState();
+										signd.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
+										signd.setLine(1, "§b" + system.name);
+										signd.setLine(2, "§b- Deposit -");
+										signd.setLine(3, "§7(" + system.owner + ")");
+										signd.update();
+									}catch(Exception ignored){}
+								}
+								system.save();
+							}
+							s.sendMessage(Main.prefix + fixColors(msg.cmd_setOwner_complete));
+						}else{
+							s.sendMessage(Main.prefix + fixColors(msg.cmd_setOwner_baseNotExist).replaceAll("%base%", args[1]));
+						}
+					}else{
+						s.sendMessage(Main.prefix + fixColors(msg.cmd_setOwner_noPlayer));
+					}
+				}else{
+					s.sendMessage(Main.prefix + fixColors(msg.cmd_setOwner_noBase));
 				}
 			}else{
 				s.sendMessage(Main.prefix + fixColors(msg.cmd_dontHavePermission));
@@ -656,34 +803,69 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 	}
 
-	public int addGlow(Player p, Location loc, boolean remove){
-		int id = (int)(Math.random()*(1000-200+1)+200);
+	public int addGlow(Player p, Location loc, boolean remove, int givenId){
+		if(remove && glowMap.containsKey(p)){
+			glowTasks.get(p).cancel();
+			glowTasks.remove(p);
+			ArrayList<String> list = glowMap.get(p);
+			for(String id : list){
+				removeGlow(p, Integer.parseInt(id));
+			}
+			glowMap.remove(p);
+		}
+		int id = 200;
+		if(!remove){
+			id = givenId;
+		}else{
+			ArrayList<String> list = new ArrayList<>();
+			list.add(id + "");
+			glowMap.put(p, list);
+		}
 		glow(loc, p, id);
 		if(remove){
 			int finalId = id;
-			Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
+			BukkitTask task = Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
 				@Override
 				public void run() {
 					removeGlow(p, finalId);
+					glowMap.remove(p);
+					glowTasks.remove(p);
 				}
 			}, 20 * 10);
+			glowTasks.put(p, task);
 		}
 		return id;
 	}
 
 	public void addGlow(Player p, List<Location> locs){
-		ArrayList<String> ids = new ArrayList<>();
-		for(Location loc : locs){
-			ids.add(addGlow(p, loc, false) + "");
+		if(glowMap.containsKey(p)){
+			glowTasks.get(p).cancel();
+			glowTasks.remove(p);
+			ArrayList<String> list = glowMap.get(p);
+			for(String id : list){
+				removeGlow(p, Integer.parseInt(id));
+			}
+			glowMap.remove(p);
 		}
-		Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
+		ArrayList<String> ids = new ArrayList<>();
+		int id = 200;
+		for(Location loc : locs){
+			addGlow(p, loc, false, id);
+			ids.add(id + "");
+			id++;
+		}
+		glowMap.put(p, ids);
+		BukkitTask task = Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				for(String id : ids){
 					removeGlow(p, Integer.parseInt(id));
 				}
+				glowMap.remove(p);
+				glowTasks.remove(p);
 			}
 		}, 20 * 10);
+		glowTasks.put(p, task);
 	}
 
 	public void sendPacket(Player p, Object packet) {
@@ -707,7 +889,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 		commands.put("filters", "itemsorter.command.filters");
 		commands.put("deposits", "itemsorter.command.deposits");
 		commands.put("glow", "itemsorter.command.glow");
+		commands.put("autosign", "itemsorter.command.autosign");
 		commands.put("reload", "itemsorter.command.reload");
+		commands.put("setOwner", "itemsorter.command.setOwner");
 		//  args.lenth == 4
 		if(args.length == 4 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
 			ArrayList<String> page = new ArrayList<>();
@@ -747,6 +931,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 				bases.add(sys.name);
 			}
 			return Utilities.searchforsimilarity(args[2], bases);
+		}else if(args.length == 3 && args[0].equalsIgnoreCase("autosign") && s.hasPermission(commands.get("autosign"))){
+			ArrayList<String> bases = new ArrayList<>();
+			for(System sys : Main.bases){
+				bases.add(sys.name);
+			}
+			return Utilities.searchforsimilarity(args[2], bases);
+		}else if(args.length == 3 && args[0].equalsIgnoreCase("setOwner") && s.hasPermission(commands.get("setOwner"))){
+			ArrayList<String> players = new ArrayList<>();
+			for(Player p : Bukkit.getOnlinePlayers()){
+				players.add(p.getName());
+			}
+			return Utilities.searchforsimilarity(args[2], players);
 		}
 
 		//  args.lenth == 2
@@ -780,6 +976,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 			strings.add("base");
 			strings.add("deposits");
 			return Utilities.searchforsimilarity(args[1], strings);
+		}else if(args.length == 2 && args[0].equalsIgnoreCase("autosign") && s.hasPermission(commands.get("autosign"))){
+			ArrayList<String> strings = new ArrayList<>();
+			strings.add("filter");
+			strings.add("deposit");
+			strings.add("stop");
+			return Utilities.searchforsimilarity(args[1], strings);
+		}else if(args.length == 2 && args[0].equalsIgnoreCase("setOwner") && s.hasPermission(commands.get("setOwner"))){
+			ArrayList<String> bases = new ArrayList<>();
+			for(System sys : Main.bases){
+				bases.add(sys.name);
+			}
+			return Utilities.searchforsimilarity(args[1], bases);
 		}
 
 		//  args.lenth == 1

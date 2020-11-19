@@ -1,6 +1,6 @@
 name: ItemSorter
 main: me.clcondorcet.itemSorter.Main
-version: 1.2.8
+version: 1.3.0
 api-version: 1.13
 author: clcondorcet
 description: An item sorter for minecraft
@@ -37,7 +37,13 @@ permissions:
       itemsorter.command.list: true
       itemsorter.command.base: true
       itemsorter.command.base.*: true
-
+      itemsorter.command.filters: true
+      itemsorter.command.filters.*: true
+      itemsorter.command.deposits: true
+      itemsorter.command.deposits.*: true
+      itemsorter.command.glow.*: true
+      itemsorter.command.autosign: true
+      itemsorter.command.setOwner: true
 
   itemsorter.command.reload:
     description: Allow you to reload
@@ -150,10 +156,18 @@ permissions:
       itemsorter.command.glow.trust: true
       itemsorter.command.glow.other: true
 
-  itemsorter.command.glow.trut:
+  itemsorter.command.glow.trust:
     description: Allow you to see blocs through walls
     default: true
 
   itemsorter.command.glow.other:
     description: Allow you to see blocs through walls
+    default: op
+
+  itemsorter.command.autosign:
+    description: Allow you to place filters and deposits without writing on sign
+    default: true
+
+  itemsorter.command.setowner:
+    description: Allow you to change the owner of a base
     default: op

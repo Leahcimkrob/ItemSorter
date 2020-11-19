@@ -3,7 +3,6 @@ package me.clcondorcet.itemSorter.config;
 import me.clcondorcet.itemSorter.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

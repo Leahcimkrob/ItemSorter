@@ -67,7 +67,9 @@ public class Messages {
     public String cmd_help_filters;
     public String cmd_help_deposits;
     public String cmd_help_glow;
+    public String cmd_help_autosign;
     public String cmd_help_reload;
+    public String cmd_help_setOwner;
     public String cmd_help_space2;
     public String cmd_help_footer;
     public String cmd_reload_complete;
@@ -134,6 +136,17 @@ public class Messages {
     public String cmd_glow_notPlayer;
     public String cmd_glow_complete;
     public String cmd_glow_lowerVersion;
+    public String cmd_autosign_complete;
+    public String cmd_autosign_noBase;
+    public String cmd_autosign_noOption;
+    public String cmd_autosign_baseNotExist;
+    public String cmd_autosign_notTrust;
+    public String cmd_autosign_notPlayer;
+    public String cmd_autosign_stop;
+    public String cmd_setOwner_complete;
+    public String cmd_setOwner_noPlayer;
+    public String cmd_setOwner_noBase;
+    public String cmd_setOwner_baseNotExist;
 
     public Messages(FileConfiguration conf, FileConfiguration source) {
         // Messages
@@ -200,7 +213,9 @@ public class Messages {
         this.cmd_help_filters = (String) getfromsource(conf, source, "command.help.filters");
         this.cmd_help_deposits = (String) getfromsource(conf, source, "command.help.deposits");
         this.cmd_help_glow = (String) getfromsource(conf, source, "command.help.glow");
+        this.cmd_help_autosign = (String) getfromsource(conf, source, "command.help.autosign");
         this.cmd_help_reload = (String) getfromsource(conf, source, "command.help.reload");
+        this.cmd_help_setOwner = (String) getfromsource(conf, source, "command.help.setOwner");
         this.cmd_help_space2 = (String) getfromsource(conf, source, "command.help.space2");
         this.cmd_help_footer = (String) getfromsource(conf, source, "command.help.footer");
 
@@ -273,6 +288,19 @@ public class Messages {
         this.cmd_glow_complete = (String) getfromsource(conf, source, "command.glow.complete");
         this.cmd_glow_baseNotExist = (String) getfromsource(conf, source, "command.glow.baseNotExist");
         this.cmd_glow_lowerVersion =  (String) getfromsource(conf, source, "command.glow.lowerVersion");
+
+        this.cmd_autosign_complete =  (String) getfromsource(conf, source, "command.autosign.complete");
+        this.cmd_autosign_noBase =  (String) getfromsource(conf, source, "command.autosign.noBase");
+        this.cmd_autosign_noOption =  (String) getfromsource(conf, source, "command.autosign.noOption");
+        this.cmd_autosign_baseNotExist =  (String) getfromsource(conf, source, "command.autosign.baseNotExist");
+        this.cmd_autosign_notTrust =  (String) getfromsource(conf, source, "command.autosign.notTrust");
+        this.cmd_autosign_notPlayer =  (String) getfromsource(conf, source, "command.autosign.notPlayer");
+        this.cmd_autosign_stop =  (String) getfromsource(conf, source, "command.autosign.stop");
+
+        this.cmd_setOwner_complete =  (String) getfromsource(conf, source, "command.setOwner.complete");
+        this.cmd_setOwner_noPlayer =  (String) getfromsource(conf, source, "command.setOwner.noPlayer");
+        this.cmd_setOwner_noBase =  (String) getfromsource(conf, source, "command.setOwner.noBase");
+        this.cmd_setOwner_baseNotExist =  (String) getfromsource(conf, source, "command.setOwner.baseNotExist");
 
         try {
             Main.configManager.saveConfig("messages_" + Main.configManager.config.language.toUpperCase() + ".yml", new File(Main.getInstance().getDataFolder(), "translations"));
