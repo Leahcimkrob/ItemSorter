@@ -66,7 +66,7 @@ public class GuiEvent  implements Listener {
                                     ((System)Main.inFilter.get(p)[1]).save();
                                     refreshFilterInv(p, p.getOpenInventory().getTopInventory(), (Filter)Main.inFilter.get(p)[0], (Integer)Main.inFilter.get(p)[2]);
                                 }else{
-                                    p.sendMessage(Main.prefix + Main.configManager.config.msg_alreadyExistFilter.replaceAll("&", "§"));
+                                    p.sendMessage(Main.prefix + Main.configManager.messages.msg_alreadyExistFilter.replaceAll("&", "§"));
                                 }
                             }
                         }catch(Exception ignored){}
@@ -128,30 +128,30 @@ public class GuiEvent  implements Listener {
                 for(System sys : Main.bases){
                     if(System.getLoc(sys.baseLoc).equals(clickLoc) || System.getLoc(sys.sign).equals(clickLoc)){
                         e.setCancelled(true);
-                        if ((System.getLoc(sys.sign).equals(clickLoc)) && !((Sign) click.getState()).getLine(0).equals(Main.configManager.config.sign_prefix.replace("&", "§"))) {
+                        if ((System.getLoc(sys.sign).equals(clickLoc)) && !((Sign) click.getState()).getLine(0).equals(Main.configManager.messages.sign_prefix.replace("&", "§"))) {
                             Sign sign = (Sign) click.getState();
-                            sign.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+                            sign.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
                             sign.setLine(1, "§b" + sys.name);
                             sign.setLine(2, "§b= BASE =");
                             sign.setLine(3, "§7(" + sys.owner + ")");
                             sign.update();
                         }
                         if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("is.admin")){
-                            Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.config.inv_trustName.replaceAll("&", "§") + sys.name);
+                            Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.messages.inv_trustName.replaceAll("&", "§") + sys.name);
                             Object[] data = new Object[]{sys, true, 1};
                             Main.inSystem.put(e.getPlayer(), data);
                             e.getPlayer().openInventory(inv);
                             refreshTrustInv(e.getPlayer(), inv, sys, 1, true);
                         }else{
-                            e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_onlyOwnerTrust.replaceAll("&", "§"));
+                            e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_onlyOwnerTrust.replaceAll("&", "§"));
                         }
                         return;
                     }
                     for(Filter filter : sys.filters){
                         if(System.getLoc(filter.sign).equals(clickLoc)){
-                            if(!((Sign) click.getState()).getLine(0).equals(Main.configManager.config.sign_prefix.replace("&", "§"))){
+                            if(!((Sign) click.getState()).getLine(0).equals(Main.configManager.messages.sign_prefix.replace("&", "§"))){
                                 Sign signe = (Sign) click.getState();
-                                signe.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+                                signe.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
                                 signe.setLine(1, "§b" + sys.name);
                                 signe.setLine(2, "§b- Filter -");
                                 signe.setLine(3, "§7(" + sys.owner + ")");
@@ -159,27 +159,27 @@ public class GuiEvent  implements Listener {
                             }
                             for(Object[] data : Main.inFilter.values()){
                                 if(data[0].equals(filter)){
-                                    e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_filterInUse.replaceAll("&", "§"));
+                                    e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_filterInUse.replaceAll("&", "§"));
                                     return;
                                 }
                             }
                             if(sys.isTrust(e.getPlayer())){
-                                Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.config.inv_filterName.replaceAll("&", "§") + sys.name);
+                                Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.messages.inv_filterName.replaceAll("&", "§") + sys.name);
                                 Object[] data = new Object[]{filter, sys, 1};
                                 Main.inFilter.put(e.getPlayer(), data);
                                 e.getPlayer().openInventory(inv);
                                 refreshFilterInv(e.getPlayer(), inv, filter, 1);
                             }else{
-                                e.getPlayer().sendMessage(Main.prefix + Main.configManager.config.msg_filterNeedTrust.replaceAll("&", "§"));
+                                e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_filterNeedTrust.replaceAll("&", "§"));
                             }
                             return;
                         }
                     }
                     for(Deposit deposit : sys.deposits) {
                         if (System.getLoc(deposit.sign).equals(clickLoc)) {
-                            if(!((Sign) click.getState()).getLine(0).equals(Main.configManager.config.sign_prefix.replace("&", "§"))){
+                            if(!((Sign) click.getState()).getLine(0).equals(Main.configManager.messages.sign_prefix.replace("&", "§"))){
                                 Sign sign = (Sign) click.getState();
-                                sign.setLine(0, Main.configManager.config.sign_prefix.replace("&", "§"));
+                                sign.setLine(0, Main.configManager.messages.sign_prefix.replace("&", "§"));
                                 sign.setLine(1, "§b" + sys.name);
                                 sign.setLine(2, "§b- Deposit -");
                                 sign.setLine(3, "§7(" + sys.owner + ")");
@@ -225,7 +225,7 @@ public class GuiEvent  implements Listener {
                     meta.setOwner(st);
                     meta.setDisplayName("§e" + st);
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add(Main.configManager.config.inv_trustRemove.replaceAll("&", "§"));
+                    lore.add(Main.configManager.messages.inv_trustRemove.replaceAll("&", "§"));
                     meta.setLore(lore);
                     item.setItemMeta(meta);
                     inv.setItem(o, item);
@@ -261,7 +261,7 @@ public class GuiEvent  implements Listener {
                         meta.setOwner(pl.getName());
                         meta.setDisplayName("§e" + pl.getName());
                         ArrayList<String> lore = new ArrayList<>();
-                        lore.add(Main.configManager.config.inv_trustAdd.replaceAll("&", "§"));
+                        lore.add(Main.configManager.messages.inv_trustAdd.replaceAll("&", "§"));
                         meta.setLore(lore);
                         item.setItemMeta(meta);
                         inv.setItem(o, item);
@@ -297,9 +297,9 @@ public class GuiEvent  implements Listener {
                 if(i >= 27 * (page - 1) && i <= 26 * page){
                     ItemStack item = new ItemStack(mat);
                     ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(Main.configManager.config.inv_filterPriority.replaceAll("&", "§") + filter.materials.get(mat));
+                    meta.setDisplayName(Main.configManager.messages.inv_filterPriority.replaceAll("&", "§") + filter.materials.get(mat));
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add(Main.configManager.config.inv_filterRemove.replaceAll("&", "§"));
+                    lore.add(Main.configManager.messages.inv_filterRemove.replaceAll("&", "§"));
                     meta.setLore(lore);
                     item.setItemMeta(meta);
                     inv.setItem(o, item);
@@ -310,7 +310,7 @@ public class GuiEvent  implements Listener {
         }else{
             ItemStack item = new ItemStack(Material.BARRIER);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(Main.configManager.config.inv_filterTrashPriority.replaceAll("&", "§") + filter.trashPriority);
+            meta.setDisplayName(Main.configManager.messages.inv_filterTrashPriority.replaceAll("&", "§") + filter.trashPriority);
             item.setItemMeta(meta);
             inv.setItem(0, item);
             o++;

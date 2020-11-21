@@ -19,7 +19,7 @@ public class Deposit {
 	public void delete(){
 		try{
 			Sign sign = (Sign) this.sign.getBlock().getState();
-			sign.setLine(0, "§4" + Main.configManager.config.sign_prefix.replaceAll("&.", ""));
+			sign.setLine(0, "§4" + Main.configManager.messages.sign_prefix.replaceAll("&.", ""));
 			sign.setLine(1, "");
 			sign.setLine(2, "");
 			sign.setLine(3, "");

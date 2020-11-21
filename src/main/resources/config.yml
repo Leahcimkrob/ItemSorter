@@ -1,0 +1,10 @@
+radius: 16
+verticalRadius: 80
+maxBases:
+  default: 5 #can be bypassed by the permission: "is.unlimitedBases"
+  others: #permissions
+    - "is.vip": 10
+    - "is.vipplus": 20
+    - "is.moderator": 100
+orderChestContent: true
+Language: "EN"

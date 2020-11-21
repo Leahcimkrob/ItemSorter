@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -39,7 +40,7 @@ public class Main extends JavaPlugin{
 	public static ConfigManager configManager;
 	public static HashMap<Player, Object[]> inFilter = new HashMap<>();
 	public static HashMap<Player, Object[]> inSystem = new HashMap<>();
-	
+
 	public static Plugin getInstance(){
 		return plugin;
 	}
@@ -53,7 +54,7 @@ public class Main extends JavaPlugin{
 		versionChecker = new VersionChecker();
 		configManager = new ConfigManager();
 		configManager.loadConfigs();
-		prefix = Main.configManager.config.msg_prefix.replaceAll("&", "§");
+		prefix = Main.configManager.messages.msg_prefix.replaceAll("&", "§");
 		loadEvents();
 		loadCommands();
 		loadConfigs(null);
@@ -152,8 +153,11 @@ public class Main extends JavaPlugin{
 	}
 
 	public void loadCommands(){
-		//this.getCommand("IS").setExecutor(new Commands());
-		this.getCommand("ItemSorter").setExecutor(new Commands());
-		//this.getCommand("IS").setTabCompleter(new Commands());
+		PluginCommand command = this.getCommand("ItemSorter");
+		command.setExecutor(new Commands());
+		ArrayList<String> aliases = new ArrayList<>();
+		aliases.add("iso");
+		command.setAliases(aliases);
+		command.setTabCompleter(new Commands());
 	}
 }

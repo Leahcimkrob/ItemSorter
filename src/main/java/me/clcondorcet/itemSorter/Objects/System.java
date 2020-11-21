@@ -3,6 +3,7 @@ package me.clcondorcet.itemSorter.Objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.clcondorcet.itemSorter.Events.Event;
 import me.clcondorcet.itemSorter.Main;
 import me.clcondorcet.itemSorter.Utilities;
 import org.bukkit.Bukkit;
@@ -78,6 +79,16 @@ public class System {
 		}
 		for(Deposit deposit : this.deposits){
 			deposit.delete();
+		}
+		for(Player p : Event.autodeposits.keySet()){
+			if(Event.autodeposits.get(p).equals(this)){
+				Event.autodeposits.remove(p);
+			}
+		}
+		for(Player p : Event.autofilters.keySet()){
+			if(Event.autofilters.get(p).equals(this)){
+				Event.autofilters.remove(p);
+			}
 		}
 		FileConfiguration config = Main.configManager.getConfig("data.yml");
 		config.set("data." + this.name, null);

@@ -2,13 +2,17 @@ package me.clcondorcet.itemSorter;
 
 import me.clcondorcet.itemSorter.Events.EventServerLoad;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class VersionHandler {
 
@@ -16,6 +20,117 @@ public class VersionHandler {
 
     VersionHandler(){
         this.version = getVersion(Main.version);
+    }
+
+    public Object getpacketSpawnEntityFallingBlock(Class packetSpawnEntityClass, Location loc, Integer id) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, InstantiationException {
+        Object packet = null;
+        if(isVersionSupOrEqualThan("1_14")){
+            Class entityTypesClass = Class.forName("net.minecraft.server." + Main.version + ".EntityTypes");
+            Field a = packetSpawnEntityClass.getDeclaredField("a");
+            a.setAccessible(true);
+            Field b = packetSpawnEntityClass.getDeclaredField("b");
+            b.setAccessible(true);
+            Field c = packetSpawnEntityClass.getDeclaredField("c");
+            c.setAccessible(true);
+            Field d = packetSpawnEntityClass.getDeclaredField("d");
+            d.setAccessible(true);
+            Field e = packetSpawnEntityClass.getDeclaredField("e");
+            e.setAccessible(true);
+            Field f = packetSpawnEntityClass.getDeclaredField("f");
+            f.setAccessible(true);
+            Field g = packetSpawnEntityClass.getDeclaredField("g");
+            g.setAccessible(true);
+            Field h = packetSpawnEntityClass.getDeclaredField("h");
+            h.setAccessible(true);
+            Field i = packetSpawnEntityClass.getDeclaredField("i");
+            i.setAccessible(true);
+            Field j = packetSpawnEntityClass.getDeclaredField("j");
+            j.setAccessible(true);
+            Field k = packetSpawnEntityClass.getDeclaredField("k");
+            k.setAccessible(true);
+            Field l = packetSpawnEntityClass.getDeclaredField("l");
+            l.setAccessible(true);
+            packet = packetSpawnEntityClass.newInstance();
+            a.set(packet, id);
+            b.set(packet, UUID.randomUUID());
+            c.set(packet, loc.getX());
+            d.set(packet, loc.getY());
+            e.set(packet, loc.getZ());
+            f.set(packet, 0);
+            g.set(packet, 0);
+            h.set(packet, 0);
+            i.set(packet, 0);
+            j.set(packet, 0);
+            k.set(packet, entityTypesClass.getDeclaredField("FALLING_BLOCK").get(null));
+            l.set(packet, getMaterialIdNBTQuartz());
+            return packet;
+        }else if(isVersionSupOrEqualThan("1_10")){
+            Field a = packetSpawnEntityClass.getDeclaredField("a");
+            a.setAccessible(true);
+            Field b = packetSpawnEntityClass.getDeclaredField("b");
+            b.setAccessible(true);
+            Field c = packetSpawnEntityClass.getDeclaredField("c");
+            c.setAccessible(true);
+            Field d = packetSpawnEntityClass.getDeclaredField("d");
+            d.setAccessible(true);
+            Field e = packetSpawnEntityClass.getDeclaredField("e");
+            e.setAccessible(true);
+            Field f = packetSpawnEntityClass.getDeclaredField("f");
+            f.setAccessible(true);
+            Field g = packetSpawnEntityClass.getDeclaredField("g");
+            g.setAccessible(true);
+            Field h = packetSpawnEntityClass.getDeclaredField("h");
+            h.setAccessible(true);
+            Field i = packetSpawnEntityClass.getDeclaredField("i");
+            i.setAccessible(true);
+            Field j = packetSpawnEntityClass.getDeclaredField("j");
+            j.setAccessible(true);
+            Field k = packetSpawnEntityClass.getDeclaredField("k");
+            k.setAccessible(true);
+            Field l = packetSpawnEntityClass.getDeclaredField("l");
+            l.setAccessible(true);
+            packet = packetSpawnEntityClass.newInstance();
+            a.set(packet, id);
+            b.set(packet, UUID.randomUUID());
+            c.set(packet, loc.getX());
+            d.set(packet, loc.getY());
+            e.set(packet, loc.getZ());
+            f.set(packet, 0);
+            g.set(packet, 0);
+            h.set(packet, 0);
+            i.set(packet, 0);
+            j.set(packet, 0);
+            k.set(packet, 70);
+            l.set(packet, getMaterialIdNBTQuartz());
+            return packet;
+        }
+        return null;
+    }
+
+    public String getDataWRFBoolean(){
+        if(isVersionSupOrEqualThan("1_13")){
+            return "i";
+        }else if(isVersionSupOrEqualThan("1_10")){
+            return "h";
+        }else{
+            return null;
+        }
+    }
+
+    public int getMaterialIdNBTQuartz(){
+        if(isVersionSupOrEqualThan("1_16")){
+            return 6742;
+        }else if(isVersionSupOrEqualThan("1_14")){
+            return 6202;
+        }else if(isVersionSupOrEqualThan("1_13")){
+            return 5696;
+        }else{
+            return 155;
+        }
+    }
+
+    public boolean isGlowAvailable(){
+        return Main.versionHandler.isVersionSupOrEqualThan("1_10");
     }
 
     public boolean instanceOfBarel(Object obj){
