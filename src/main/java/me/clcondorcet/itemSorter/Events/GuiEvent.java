@@ -136,7 +136,7 @@ public class GuiEvent  implements Listener {
                             sign.setLine(3, "§7(" + sys.owner + ")");
                             sign.update();
                         }
-                        if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("is.admin")){
+                        if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("itemsorter.admin")){
                             Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.messages.inv_trustName.replaceAll("&", "§") + sys.name);
                             Object[] data = new Object[]{sys, true, 1};
                             Main.inSystem.put(e.getPlayer(), data);
@@ -163,7 +163,7 @@ public class GuiEvent  implements Listener {
                                     return;
                                 }
                             }
-                            if(sys.isTrust(e.getPlayer())){
+                            if(sys.isTrust(e.getPlayer()) || e.getPlayer().hasPermission("itemsorter.admin")){
                                 Inventory inv = Bukkit.createInventory(null, 36, Main.configManager.messages.inv_filterName.replaceAll("&", "§") + sys.name);
                                 Object[] data = new Object[]{filter, sys, 1};
                                 Main.inFilter.put(e.getPlayer(), data);

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class VersionChecker {
 
-    public static String pluginVersion = "1.3.0";
+    public static String pluginVersion = "1.3.1";
     public boolean needUpdate;
     public String lastVersion;
 

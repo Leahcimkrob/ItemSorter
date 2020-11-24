@@ -123,7 +123,6 @@ public class Event implements Listener{
 					chests[0] = (Chest) ((DoubleChest) inv.getHolder()).getLeftSide();
 					chests[1] = (Chest) ((DoubleChest) inv.getHolder()).getRightSide();
 				}else if(inv.getHolder() instanceof Chest){
-					chests = new Chest[1];
 					chests[0] = ((Chest) inv.getHolder());
 				}else if(Main.versionHandler.instanceOfBarel(inv.getHolder())){
 					isBarrel = true;
@@ -176,7 +175,7 @@ public class Event implements Listener{
 			if(Utilities.isBDF(e.getBlock().getType()) || Utilities.isSign(e.getBlock())){
 				for(System sys : Main.bases){
 					if(System.getLoc(sys.baseLoc).equals(System.getLoc(e.getBlock().getLocation())) || System.getLoc(sys.sign).equals(System.getLoc(e.getBlock().getLocation()))){
-						if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("is.admin")){
+						if(sys.owner.equals(e.getPlayer().getName()) || e.getPlayer().hasPermission("itemsorter.admin")){
 							Main.bases.remove(sys);
 							sys.delete();
 							e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_baseDeleted.replaceAll("&", "§"));
@@ -271,7 +270,7 @@ public class Event implements Listener{
 						return;
 					}
 				}
-				if (!e.getPlayer().hasPermission("is.unlimitedBases")) {
+				if (!e.getPlayer().hasPermission("itemsorter.unlimitedBases")) {
 					int count = 0;
 					for (System sys : Main.bases) {
 						if (sys.owner.equals(e.getPlayer().getName())) {
@@ -482,7 +481,7 @@ public class Event implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onExplosion(EntityExplodeEvent e){
 		if(!e.isCancelled()){
 			for(Block block : e.blockList()){
