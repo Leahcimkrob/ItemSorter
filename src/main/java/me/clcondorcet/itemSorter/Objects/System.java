@@ -96,7 +96,7 @@ public class System {
 	}
 	
 	public boolean isTrust(Player p){
-		if(p.hasPermission("is.admin") || this.owner.equals(p.getName())){
+		if(p.hasPermission("itemsorter.admin") || this.owner.equals(p.getName())){
 			return true;
 		}
 		for(String st : trusts){
