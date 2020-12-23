@@ -291,10 +291,10 @@ public class GuiEvent  implements Listener {
         int o = 0;
         if(!filter.isTrash){
             for(Material mat : filter.materials.keySet()){
-                if(i > 26 * page){
+                if(i > (27 * page) - 1){
                     break;
                 }
-                if(i >= 27 * (page - 1) && i <= 26 * page){
+                if(i >= 27 * (page - 1) && i <= (27 * page) - 1){
                     ItemStack item = new ItemStack(mat);
                     ItemMeta meta = item.getItemMeta();
                     meta.setDisplayName(Main.configManager.messages.inv_filterPriority.replaceAll("&", "§") + filter.materials.get(mat));
@@ -320,7 +320,7 @@ public class GuiEvent  implements Listener {
         }else{
             inv.setItem(27, Main.cachedItems.getPrevD());
         }
-        if(i > 26 * page){
+        if(i > (27 * page) - 1){
             inv.setItem(35, Main.cachedItems.getNextE());
         }else{
             inv.setItem(o, Main.cachedItems.getAdd());
