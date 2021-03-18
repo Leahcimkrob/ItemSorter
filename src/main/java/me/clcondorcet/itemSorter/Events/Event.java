@@ -245,7 +245,7 @@ public class Event implements Listener{
 				}
 			}else{
 				for (System sys : Main.bases) {
-					if (sys.name.equals(e.getLine(1).replaceAll(" ", ""))) {
+					if (sys.name.equals(e.getLine(1).replaceAll(" ", "").replaceAll("[.]", "_"))) {
 						isSame = true;
 						source = sys;
 						break;
@@ -253,7 +253,7 @@ public class Event implements Listener{
 				}
 			}
 			if (e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_is + "]")) {
-				if (isSame || e.getLine(1).replaceAll(" ", "").equalsIgnoreCase("")) {
+				if (isSame || e.getLine(1).replaceAll(" ", "").replaceAll("[.]", "_").equalsIgnoreCase("")) {
 					e.getBlock().breakNaturally();
 					e.getPlayer().sendMessage(Main.prefix + Main.configManager.messages.msg_nameIncorrect.replaceAll("&", "§"));
 					return;
@@ -283,7 +283,7 @@ public class Event implements Listener{
 						return;
 					}
 				}
-				final String name = e.getLine(1).replaceAll(" ", "");
+				final String name = e.getLine(1).replaceAll(" ", "").replaceAll("[.]", "_");
 				System newSystem = new System(name, System.getLoc(block.getLocation()), System.getLoc(sign.getLocation()), e.getPlayer().getName(), new ArrayList<String>(), new ArrayList<Filter>(), new ArrayList<Deposit>());
 				Main.bases.add(newSystem);
 				newSystem.save();
@@ -306,7 +306,7 @@ public class Event implements Listener{
 				return;
 			}
 			if (autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer()) || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isd + "]") || e.getLine(0).equalsIgnoreCase("[" + Main.configManager.messages.sign_prefix_input_isf + "]")) {
-				final String name = e.getLine(1).replaceAll(" ", "");
+				final String name = e.getLine(1).replaceAll(" ", "").replaceAll("[.]", "_");
 				if(!(autofilters.containsKey(e.getPlayer()) || autodeposits.containsKey(e.getPlayer()))){
 					if (!isSame || name.equalsIgnoreCase("")) {
 						e.getBlock().breakNaturally();
