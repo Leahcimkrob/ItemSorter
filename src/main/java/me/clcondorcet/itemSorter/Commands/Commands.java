@@ -762,54 +762,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	public void glow(Location loc, Player p, int id){
-		try{
-			Class packetSpawnEntityClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutSpawnEntity");
-			Object packetSpawnEntity = Main.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
-			sendPacket(p, packetSpawnEntity);
-			ArrayList<Object> list = new ArrayList<>();
-			Class dataWatcherClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcher");
-			Class dataWatcher_ItemClass = dataWatcherClass.getClasses()[0];
-			Class dataWatcherObjectClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcherObject");
-			Class DataWatcherRegistryClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcherRegistry");
-			list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
-			list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(Main.versionHandler.getDataWRFBoolean()).get(null)), true));
-			Class packetEntityMetadataClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutEntityMetadata");
-			Field a = packetEntityMetadataClass.getDeclaredField("a");
-			a.setAccessible(true);
-			Field b = packetEntityMetadataClass.getDeclaredField("b");
-			b.setAccessible(true);
-			Object packetEntityMetadata = packetEntityMetadataClass.newInstance();
-			a.set(packetEntityMetadata, id);
-			b.set(packetEntityMetadata, list);
-			sendPacket(p, packetEntityMetadata);
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-	}
-
-	public void removeGlow(Player p, int id){
-		try{
-			Class packetEntityDestroyClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutEntityDestroy");
-			Field f = packetEntityDestroyClass.getDeclaredField("a");
-			f.setAccessible(true);
-			Object packet = packetEntityDestroyClass.newInstance();
-			int ints[] = new int[1];
-			ints[0] = id;
-			f.set(packet, ints);
-			sendPacket(p, packet);
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-	}
-
 	public int addGlow(Player p, Location loc, boolean remove, int givenId){
 		if(remove && glowMap.containsKey(p)){
 			glowTasks.get(p).cancel();
 			glowTasks.remove(p);
 			ArrayList<String> list = glowMap.get(p);
 			for(String id : list){
-				removeGlow(p, Integer.parseInt(id));
+				Main.versionHandler.removeGlow(p, Integer.parseInt(id));
 			}
 			glowMap.remove(p);
 		}
@@ -821,13 +780,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 			list.add(id + "");
 			glowMap.put(p, list);
 		}
-		glow(loc, p, id);
+		Main.versionHandler.glow(loc, p, id);
 		if(remove){
 			int finalId = id;
 			BukkitTask task = Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					removeGlow(p, finalId);
+					Main.versionHandler.removeGlow(p, finalId);
 					glowMap.remove(p);
 					glowTasks.remove(p);
 				}
@@ -843,7 +802,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			glowTasks.remove(p);
 			ArrayList<String> list = glowMap.get(p);
 			for(String id : list){
-				removeGlow(p, Integer.parseInt(id));
+				Main.versionHandler.removeGlow(p, Integer.parseInt(id));
 			}
 			glowMap.remove(p);
 		}
@@ -859,25 +818,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 			@Override
 			public void run() {
 				for(String id : ids){
-					removeGlow(p, Integer.parseInt(id));
+					Main.versionHandler.removeGlow(p, Integer.parseInt(id));
 				}
 				glowMap.remove(p);
 				glowTasks.remove(p);
 			}
 		}, 20 * 10);
 		glowTasks.put(p, task);
-	}
-
-	public void sendPacket(Player p, Object packet) {
-		try {
-			Method handle = p.getClass().getMethod("getHandle");
-			Object craftPlayer = handle.invoke(p);
-			Object playerConnection = craftPlayer.getClass().getField("playerConnection").get(craftPlayer);
-			Class<?> packetClass = Class.forName("net.minecraft.server." + Main.version + ".Packet");
-			playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override

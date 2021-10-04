@@ -6,11 +6,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.type.WallSign;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -23,8 +26,38 @@ public class VersionHandler {
     }
 
     public Object getpacketSpawnEntityFallingBlock(Class packetSpawnEntityClass, Location loc, Integer id) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, InstantiationException {
-        Object packet = null;
-        if(isVersionSupOrEqualThan("1_14")){
+        if(isVersionSupOrEqualThan("1_17")){
+            Class entityTypesClass = Class.forName("net.minecraft.world.entity.EntityTypes");
+            Field f = packetSpawnEntityClass.getDeclaredField("f");
+            f.setAccessible(true);
+            Field g = packetSpawnEntityClass.getDeclaredField("g");
+            g.setAccessible(true);
+            Field h = packetSpawnEntityClass.getDeclaredField("h");
+            h.setAccessible(true);
+            Field i = packetSpawnEntityClass.getDeclaredField("i");
+            i.setAccessible(true);
+            Field j = packetSpawnEntityClass.getDeclaredField("j");
+            j.setAccessible(true);
+            Class vec3DClass = Class.forName("net.minecraft.world.phys.Vec3D");
+            Object vec3D = vec3DClass.getDeclaredConstructors()[0].newInstance(0.0d, 0.0d, 0.0d);
+            Object packet = packetSpawnEntityClass.getDeclaredConstructors()[4].newInstance(
+                    id,
+                    UUID.randomUUID(),
+                    loc.getX(),
+                    loc.getY(),
+                    loc.getZ(),
+                    0.0f,
+                    0.0f,
+                    entityTypesClass.getDeclaredField("C").get(null),
+                    getMaterialIdNBTQuartz(),
+                    vec3D);
+            f.set(packet, 0);
+            g.set(packet, 0);
+            h.set(packet, 0);
+            i.set(packet, 0);
+            j.set(packet, 0);
+            return packet;
+        }else if(isVersionSupOrEqualThan("1_14")){
             Class entityTypesClass = Class.forName("net.minecraft.server." + Main.version + ".EntityTypes");
             Field a = packetSpawnEntityClass.getDeclaredField("a");
             a.setAccessible(true);
@@ -50,7 +83,7 @@ public class VersionHandler {
             k.setAccessible(true);
             Field l = packetSpawnEntityClass.getDeclaredField("l");
             l.setAccessible(true);
-            packet = packetSpawnEntityClass.newInstance();
+            Object packet = packetSpawnEntityClass.newInstance();
             a.set(packet, id);
             b.set(packet, UUID.randomUUID());
             c.set(packet, loc.getX());
@@ -89,7 +122,7 @@ public class VersionHandler {
             k.setAccessible(true);
             Field l = packetSpawnEntityClass.getDeclaredField("l");
             l.setAccessible(true);
-            packet = packetSpawnEntityClass.newInstance();
+            Object packet = packetSpawnEntityClass.newInstance();
             a.set(packet, id);
             b.set(packet, UUID.randomUUID());
             c.set(packet, loc.getX());
@@ -228,6 +261,113 @@ public class VersionHandler {
         }
     }
 
+    public void glow(Location loc, Player p, int id){
+        if(isVersionSupOrEqualThan("1_17")){
+            try{
+                Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
+                Object packetSpawnEntity = Main.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
+                sendPacket(p, packetSpawnEntity);
+                ArrayList<Object> list = new ArrayList<>();
+                Class dataWatcherClass = Class.forName("net.minecraft.network.syncher.DataWatcher");
+                Class dataWatcher_ItemClass = dataWatcherClass.getClasses()[0];
+                Class dataWatcherObjectClass = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
+                Class DataWatcherRegistryClass = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(Main.versionHandler.getDataWRFBoolean()).get(null)), true));
+                Class entityClass = Class.forName("net.minecraft.world.entity.Entity");
+                Object dataWatcher = dataWatcherClass.getDeclaredConstructor(entityClass).newInstance(new Object[]{null});
+                Field f = dataWatcherClass.getDeclaredField("f");
+                f.setAccessible(true);
+                Class objectArrayMapClass = Class.forName("org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap");
+                Object objectArrayMap = objectArrayMapClass.getDeclaredConstructor(int[].class, Object[].class).newInstance(new int[]{0, 1}, list.toArray());
+                f.set(dataWatcher, objectArrayMap);
+                Class packetEntityMetadataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
+                Object packetEntityMetadata = packetEntityMetadataClass.getConstructor(int.class, dataWatcherClass, boolean.class).newInstance(id, dataWatcher, true);
+                Field b = packetEntityMetadataClass.getDeclaredField("b");
+                b.setAccessible(true);
+                b.set(packetEntityMetadata, list);
+                sendPacket(p, packetEntityMetadata);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }else{
+            try{
+                Class packetSpawnEntityClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutSpawnEntity");
+                Object packetSpawnEntity = Main.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
+                sendPacket(p, packetSpawnEntity);
+                ArrayList<Object> list = new ArrayList<>();
+                Class dataWatcherClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcher");
+                Class dataWatcher_ItemClass = dataWatcherClass.getClasses()[0];
+                Class dataWatcherObjectClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcherObject");
+                Class DataWatcherRegistryClass = Class.forName("net.minecraft.server." + Main.version + ".DataWatcherRegistry");
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(Main.versionHandler.getDataWRFBoolean()).get(null)), true));
+                Class packetEntityMetadataClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutEntityMetadata");
+                Field a = packetEntityMetadataClass.getDeclaredField("a");
+                a.setAccessible(true);
+                Field b = packetEntityMetadataClass.getDeclaredField("b");
+                b.setAccessible(true);
+                Object packetEntityMetadata = packetEntityMetadataClass.newInstance();
+                a.set(packetEntityMetadata, id);
+                b.set(packetEntityMetadata, list);
+                sendPacket(p, packetEntityMetadata);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void removeGlow(Player p, int id){
+        if(isVersionSupOrEqualThan("1_17")){
+            try{
+                Class packetEntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
+                int[] ints = new int[1];
+                ints[0] = id;
+                Object packet = packetEntityDestroyClass.getDeclaredConstructors()[1].newInstance(ints);
+                sendPacket(p, packet);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }else{
+            try{
+                Class packetEntityDestroyClass = Class.forName("net.minecraft.server." + Main.version + ".PacketPlayOutEntityDestroy");
+                Field f = packetEntityDestroyClass.getDeclaredField("a");
+                f.setAccessible(true);
+                Object packet = packetEntityDestroyClass.newInstance();
+                int ints[] = new int[1];
+                ints[0] = id;
+                f.set(packet, ints);
+                sendPacket(p, packet);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void sendPacket(Player p, Object packet) {
+        if(isVersionSupOrEqualThan("1_17")){
+            try {
+                Method handle = p.getClass().getMethod("getHandle");
+                Object craftPlayer = handle.invoke(p);
+                Object playerConnection = craftPlayer.getClass().getField("b").get(craftPlayer);
+                Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+                playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                Method handle = p.getClass().getMethod("getHandle");
+                Object craftPlayer = handle.invoke(p);
+                Object playerConnection = craftPlayer.getClass().getField("playerConnection").get(craftPlayer);
+                Class<?> packetClass = Class.forName("net.minecraft.server." + Main.version + ".Packet");
+                playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public boolean isVersionSupOrEqualThan(String version){
         Integer[] versionInt = getVersion(version);
         for(int i = 0; i < (Math.max(versionInt.length, this.version.length)); i++){
@@ -256,5 +396,4 @@ public class VersionHandler {
         Integer[] result = newVersion.toArray(new Integer[0]);
         return result;
     }
-
 }
