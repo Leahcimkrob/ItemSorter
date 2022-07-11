@@ -26,7 +26,9 @@ public class VersionHandler {
     }
 
     public Object getpacketSpawnEntityFallingBlock(Class packetSpawnEntityClass, Location loc, Integer id) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, InstantiationException {
-        if(isVersionSupOrEqualThan("1_17")){
+        if(isVersionSupOrEqualThan("1_18")){
+            // Nothing to do ...
+        } else if(isVersionSupOrEqualThan("1_17")){
             Class entityTypesClass = Class.forName("net.minecraft.world.entity.EntityTypes");
             Field f = packetSpawnEntityClass.getDeclaredField("f");
             f.setAccessible(true);
@@ -262,7 +264,9 @@ public class VersionHandler {
     }
 
     public void glow(Location loc, Player p, int id){
-        if(isVersionSupOrEqualThan("1_17")){
+        if(isVersionSupOrEqualThan("1_18")){
+            // Nothing to do ...
+        } else if(isVersionSupOrEqualThan("1_17")){
             try{
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
                 Object packetSpawnEntity = Main.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
@@ -318,7 +322,9 @@ public class VersionHandler {
     }
 
     public void removeGlow(Player p, int id){
-        if(isVersionSupOrEqualThan("1_17")){
+        if(isVersionSupOrEqualThan("1_18")){
+            // Nothing to do ...
+        } else if(isVersionSupOrEqualThan("1_17")){
             try{
                 Class packetEntityDestroyClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy");
                 int[] ints = new int[1];
