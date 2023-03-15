@@ -1,11 +1,12 @@
 package me.clcondorcet.itemsorter.data;
 
 import me.clcondorcet.itemsorter.ItemSorter;
+import me.clcondorcet.itemsorter.caching.CachedMap;
 import me.clcondorcet.itemsorter.database.DatabaseManager;
 import me.clcondorcet.itemsorter.database.ResultCallBack;
 import me.clcondorcet.itemsorter.database.schemas.*;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
-import org.bukkit.Bukkit;
+import me.clcondorcet.itemsorter.utils.Pair;
 import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author clcondorcet
@@ -21,12 +23,16 @@ import java.util.UUID;
 public class DataManager {
 
     private static final HashMap<Integer, System> systems = new HashMap<>();
+    public static final HashMap<FutureLocation, System> bases = new HashMap<>();
+    public static final HashMap<FutureLocation, Deposit> deposits = new HashMap<>();
+    public static final HashMap<FutureLocation, Filter> filter = new HashMap<>();
     private static final HashMap<Integer, System> notLoadedSystems = new HashMap<>(); // System is in an unloaded map
     private static final ArrayList<System> loadingSystems = new ArrayList<>(); // System is under loading (async sql)
     public static final HashMap<String, ArrayList<System>> systemToCheck = new HashMap<>();
     public static CachedItems cachedItems;
     public static final HashMap<Player, InFilterObject> inFilter = new HashMap<>();
     public static final HashMap<Player, InSystemObject> inSystem = new HashMap<>();
+    public static final CachedMap<Pair<Integer, org.bukkit.Material>, Filter> cachedFullFilters = new CachedMap<>(30, TimeUnit.SECONDS);
 
     public static Collection<System> getSystems() {
         return new ArrayList<>(systems.values());
@@ -41,6 +47,8 @@ public class DataManager {
         if (notLoadedSystems.containsKey(sys.systemID)) {
             removeSystem(sys);
         }
+        bases.put(sys.baseLoc, sys);
+        bases.put(sys.sign, sys);
         sys.loaded = true;
         systems.put(sys.systemID, sys);
     }
@@ -50,6 +58,8 @@ public class DataManager {
     }
 
     public static boolean removeLoadingSystem(System sys) {
+        bases.remove(sys.baseLoc, sys);
+        bases.remove(sys.sign, sys);
         return loadingSystems.remove(sys);
     }
 
@@ -64,6 +74,8 @@ public class DataManager {
     public static void setNotLoadedSystem(System system) {
         removeSystem(system);
         loadingSystems.remove(system);
+        bases.put(system.baseLoc, system);
+        bases.put(system.sign, system);
         notLoadedSystems.put(system.systemID, system);
         if (!systemToCheck.containsKey(system.baseLoc.getWorldName())) {
             systemToCheck.put(system.baseLoc.getWorldName(), new ArrayList<>());
@@ -75,6 +87,8 @@ public class DataManager {
         sys.loaded = false;
         systems.remove(sys.systemID);
         loadingSystems.remove(sys);
+        bases.remove(sys.baseLoc, sys);
+        bases.remove(sys.sign, sys);
         notLoadedSystems.remove(sys.systemID);
         if (systemToCheck.containsKey(sys.baseLoc.getWorldName())) {
             systemToCheck.get(sys.baseLoc.getWorldName()).remove(sys);
@@ -101,7 +115,7 @@ public class DataManager {
             @Override
             public void run(ResultSet result) throws SQLException {
                 ArrayList<System> toDelete = new ArrayList<>();
-                while(result.next()) {
+                while (result.next()) {
                     UUID ownerUUID;
                     try {
                         ownerUUID = UUID.fromString(result.getString(SystemsTable.COL_OWNER_UUID));
@@ -191,7 +205,7 @@ public class DataManager {
                     String worldName = result.getString(DepositsTable.COL_WORLD);
                     System fromSystem = getSystemFromId(result.getInt(DepositsTable.COL_SYSTEM_ID));
                     if (fromSystem != null) {
-                        new Deposit(
+                        Deposit depo = new Deposit(
                                 depositID,
                                 fromSystem,
                                 new FutureLocation(
@@ -207,6 +221,12 @@ public class DataManager {
                                         (double) result.getInt(DepositsTable.COL_SIGN_Z)
                                 )
                         );
+                        try {
+                            if (!depo.checkExistsInWorld()) {
+                                depo.delete(false, false, true);
+                                toDelete.add(depositID);
+                            }
+                        } catch (FutureLocation.WorldNotLoaded ignored) {}
                     } else {
                         toDelete.add(depositID);
                     }
@@ -231,7 +251,7 @@ public class DataManager {
                     String worldName = result.getString(FiltersTable.COL_WORLD);
                     System fromSystem = getSystemFromId(result.getInt(FiltersTable.COL_SYSTEM_ID));
                     if (fromSystem != null) {
-                        new Filter(
+                        Filter filter = new Filter(
                                 filterID,
                                 fromSystem,
                                 new FutureLocation(
@@ -249,6 +269,12 @@ public class DataManager {
                                 result.getBoolean(FiltersTable.COL_IS_TRASH),
                                 result.getInt(FiltersTable.COL_TRASH_PRIORITY)
                         );
+                        try {
+                            if (!filter.checkExistsInWorld()) {
+                                filter.delete(false, false, true);
+                                toDelete.add(filterID);
+                            }
+                        } catch (FutureLocation.WorldNotLoaded ignored) {}
                     } else {
                         toDelete.add(filterID);
                     }

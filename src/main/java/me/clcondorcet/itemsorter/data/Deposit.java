@@ -6,7 +6,9 @@ import me.clcondorcet.itemsorter.data.tools.SignRefreshable;
 import me.clcondorcet.itemsorter.database.schemas.DepositsTable;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
+import me.clcondorcet.itemsorter.utils.Utilities;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 
 import java.sql.SQLException;
@@ -123,5 +125,9 @@ public class Deposit implements SignRefreshable, BlockComparable {
 	@Override
 	public boolean isSameBlock(Location other) {
 		return loc.sameBlock(other) || sign.sameBlock(other);
+	}
+
+	public boolean checkExistsInWorld() throws FutureLocation.WorldNotLoaded {
+		return Utilities.isContainer(loc.build().getBlock().getType()) && ItemSorter.versionHandler.isWallSign(sign.build().getBlock());
 	}
 }

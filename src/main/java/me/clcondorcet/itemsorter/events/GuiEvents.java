@@ -3,10 +3,11 @@ package me.clcondorcet.itemsorter.events;
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.*;
 import me.clcondorcet.itemsorter.data.System;
-import me.clcondorcet.itemsorter.database.schemas.SystemsTable;
+import me.clcondorcet.itemsorter.processing.ItemSorterTick;
+import me.clcondorcet.itemsorter.processing.ItemTransferTick;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
+import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -130,48 +131,48 @@ public class GuiEvents implements Listener {
         try {
             if (!e.getPlayer().isSneaking() && e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && e.getClickedBlock() != null && (e.getClickedBlock().getType() == Material.ENDER_CHEST || ItemSorter.versionHandler.isWallSign(e.getClickedBlock()))) {
                 Block click = e.getClickedBlock();
-                Location clickLoc = click.getLocation();
-                for (System sys : getSystems()) {
-                    if (sys.isSameBlock(clickLoc)) {
-                        e.setCancelled(true);
-                        if (sys.sign.sameBlock(clickLoc)) {
-                            sys.refreshSignAsync(true);
-                        }
-                        if (sys.hasOwnerPermission(e.getPlayer())) {
-                            Inventory inv = Bukkit.createInventory(null, 36, ItemSorter.configManager.messages.inv_trustName + sys.name);
-                            inSystem.put(e.getPlayer(), new InSystemObject(sys, true, 1));
-                            e.getPlayer().openInventory(inv);
-                            refreshTrustInv(e.getPlayer(), inv, sys, 1, true);
-                        } else {
-                            e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_onlyOwnerTrust);
-                        }
-                        return;
+                FutureLocation clickLoc = new FutureLocation(click.getLocation());
+
+                System sys = DataManager.bases.get(clickLoc);
+                if (sys != null) {
+                    e.setCancelled(true);
+                    sys.refreshSignAsync(true);
+                    if (sys.hasOwnerPermission(e.getPlayer())) {
+                        Inventory inv = Bukkit.createInventory(null, 36, ItemSorter.configManager.messages.inv_trustName + sys.name);
+                        inSystem.put(e.getPlayer(), new InSystemObject(sys, true, 1));
+                        e.getPlayer().openInventory(inv);
+                        refreshTrustInv(e.getPlayer(), inv, sys, 1, true);
+                    } else {
+                        e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_onlyOwnerTrust);
                     }
-                    for (Filter filter : sys.getFilters()) {
-                        if (filter.sign.sameBlock(clickLoc)) {
-                            filter.refreshSignAsync(true);
-                            for (InFilterObject data : inFilter.values()) {
-                                if (data.filter.equals(filter)) {
-                                    e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_filterInUse);
-                                    return;
-                                }
-                            }
-                            if (sys.canAccess(e.getPlayer())) {
-                                Inventory inv = Bukkit.createInventory(null, 36, ItemSorter.configManager.messages.inv_filterName + sys.name);
-                                inFilter.put(e.getPlayer(), new InFilterObject(filter, sys, 1));
-                                e.getPlayer().openInventory(inv);
-                                refreshFilterInv(e.getPlayer(), inv, filter, 1);
-                            } else {
-                                e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_filterNeedTrust);
-                            }
+                    return;
+                }
+
+                Filter filter = DataManager.filter.get(clickLoc);
+                if (filter != null) {
+                    sys = filter.sys;
+                    e.setCancelled(true);
+                    filter.refreshSignAsync(true);
+                    for (InFilterObject data : inFilter.values()) {
+                        if (data.filter.equals(filter)) {
+                            e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_filterInUse);
                             return;
                         }
                     }
-                    for (Deposit deposit : sys.getDeposits()) {
-                        if (deposit.sign.sameBlock(clickLoc)) {
-                            deposit.refreshSignAsync(true);
-                        }
+                    if (sys.canAccess(e.getPlayer())) {
+                        Inventory inv = Bukkit.createInventory(null, 36, ItemSorter.configManager.messages.inv_filterName + sys.name);
+                        inFilter.put(e.getPlayer(), new InFilterObject(filter, sys, 1));
+                        e.getPlayer().openInventory(inv);
+                        refreshFilterInv(e.getPlayer(), inv, filter, 1);
+                    } else {
+                        e.getPlayer().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_filterNeedTrust);
                     }
+                    return;
+                }
+
+                Deposit deposit = DataManager.deposits.get(clickLoc);
+                if (deposit != null) {
+                    deposit.refreshSignAsync(true);
                 }
             }
         } catch (Exception ignored) {}
@@ -184,7 +185,7 @@ public class GuiEvents implements Listener {
         }else if(inSystem.containsKey((Player)e.getPlayer())){
             inSystem.remove((Player)e.getPlayer());
         }else {
-            MoveItemEvent.transfer(e.getInventory());
+            ItemTransferTick.getInstance().transfer(e.getInventory());
         }
         Bukkit.getScheduler().runTask(ItemSorter.getInstance(), () -> ((Player) e.getPlayer()).updateInventory());
     }

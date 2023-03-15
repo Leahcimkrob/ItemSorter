@@ -1,6 +1,7 @@
 package me.clcondorcet.itemsorter.events;
 
 import me.clcondorcet.itemsorter.data.DataManager;
+import me.clcondorcet.itemsorter.utils.FutureLocation;
 import me.clcondorcet.itemsorter.utils.Utilities;
 import me.clcondorcet.itemsorter.data.Deposit;
 import me.clcondorcet.itemsorter.data.Filter;
@@ -25,20 +26,23 @@ public class ExplosionEvent implements Listener {
             if(!Utilities.isSign(block) && !Utilities.isContainerOrBaseBlock(block.getType())){
                 continue;
             }
-            for(System sys : DataManager.getSystems()){
-                if (sys.baseLoc.equals(block.getLocation()) || sys.sign.equals(block.getLocation())){
-                    sys.delete(true, true);
-                    continue;
-                }
-                Filter fil = sys.getFilterWithBlock(block);
-                if (fil != null) {
-                    fil.delete(true, true, true);
-                } else {
-                    Deposit depo = sys.getDepositWithBlock(block);
-                    if (depo != null) {
-                        depo.delete(true, true, true);
-                    }
-                }
+
+            FutureLocation blockLoc = new FutureLocation(block.getLocation());
+            System sys = DataManager.bases.get(blockLoc);
+            if (sys != null) {
+                sys.delete(true, true);
+                continue;
+            }
+
+            Filter filter = DataManager.filter.get(blockLoc);
+            if (filter != null) {
+                filter.delete(true, true, true);
+                continue;
+            }
+
+            Deposit deposit = DataManager.deposits.get(blockLoc);
+            if (deposit != null) {
+                deposit.delete(true, true, true);
             }
         }
     }

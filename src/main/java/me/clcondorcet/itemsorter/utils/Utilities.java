@@ -95,12 +95,12 @@ public class Utilities {
         return newlist;
     }
 
-    public static <T> T[] sort(T[] list, compareSup compare){
+    public static <T> T[] sort(T[] list, compareSup compare) {
         boolean isSorted = false;
-        while(!isSorted){
+        while (!isSorted) {
             isSorted = true;
-            for(int i = 0; i < list.length-1; i++){
-                if(compare.compare(list[i], list[i+1])){
+            for (int i = 0; i < list.length-1; i++) {
+                if (compare.compare(list[i], list[i+1])) {
                     isSorted = false;
                     T temp = list[i];
                     list[i] = list[i+1];
@@ -111,7 +111,7 @@ public class Utilities {
         return list;
     }
 
-    public interface compareSup{
+    public interface compareSup {
         boolean compare(Object a, Object b);
     }
 }

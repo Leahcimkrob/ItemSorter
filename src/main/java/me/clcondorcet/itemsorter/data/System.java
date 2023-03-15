@@ -7,8 +7,10 @@ import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.tools.BlockComparable;
 import me.clcondorcet.itemsorter.data.tools.SignRefreshable;
 import me.clcondorcet.itemsorter.database.schemas.SystemsTable;
+import me.clcondorcet.itemsorter.processing.ItemTransferTick;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
+import me.clcondorcet.itemsorter.utils.Pair;
 import me.clcondorcet.itemsorter.utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +18,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -193,19 +196,27 @@ public class System implements SignRefreshable, BlockComparable {
 	protected void addFilter(Filter filter) {
 		filtersLoading.remove(filter);
 		filters.put(filter.filterID, filter);
+		DataManager.filter.put(filter.loc, filter);
+		DataManager.filter.put(filter.sign, filter);
 	}
 
 	protected void addLoadingFilter(Filter filter) {
+		DataManager.filter.put(filter.loc, filter);
+		DataManager.filter.put(filter.sign, filter);
 		filtersLoading.add(filter);
 	}
 
 	public boolean removeLoadingFilter(Filter filter) {
+		DataManager.filter.remove(filter.loc, filter);
+		DataManager.filter.remove(filter.sign, filter);
 		return filtersLoading.remove(filter);
 	}
 
 	protected void removeFilter(Filter filter) {
 		filters.remove(filter.filterID);
 		filtersLoading.remove(filter);
+		DataManager.filter.remove(filter.loc, filter);
+		DataManager.filter.remove(filter.sign, filter);
 	}
 
 	public List<Filter> getFilters() {
@@ -231,24 +242,41 @@ public class System implements SignRefreshable, BlockComparable {
 
 	protected boolean addDeposit(Deposit deposit) {
 		depositsLoading.remove(deposit);
+		DataManager.deposits.put(deposit.loc, deposit);
+		DataManager.deposits.put(deposit.sign, deposit);
 		return deposits.add(deposit);
 	}
 
 	protected boolean removeDeposit(Deposit deposit) {
 		boolean rem = depositsLoading.remove(deposit);
+		DataManager.deposits.remove(deposit.loc, deposit);
+		DataManager.deposits.remove(deposit.sign, deposit);
 		return deposits.remove(deposit) || rem;
 	}
 
 	protected boolean addLoadingDeposit(Deposit deposit) {
+		DataManager.deposits.put(deposit.loc, deposit);
+		DataManager.deposits.put(deposit.sign, deposit);
 		return depositsLoading.add(deposit);
 	}
 
 	public boolean removeLoadingDeposit(Deposit deposit) {
+		DataManager.deposits.remove(deposit.loc, deposit);
+		DataManager.deposits.remove(deposit.sign, deposit);
 		return depositsLoading.remove(deposit);
 	}
 
 	public List<Deposit> getDeposits() {
 		return new ArrayList<>(deposits);
+	}
+
+	/**
+	 * @return Collection of deposits and loading deposits
+	 */
+	public List<Deposit> getAllDeposits() {
+		ArrayList<Deposit> deposits = new ArrayList<>(this.deposits);
+		deposits.addAll(depositsLoading);
+		return deposits;
 	}
 
 	public List<Deposit> getLoadingDeposits() {
@@ -386,60 +414,59 @@ public class System implements SignRefreshable, BlockComparable {
 		return i + 1;
 	}
 
-	public ArrayList<ItemStack> addItems(ArrayList<ItemStack> items){
-		HashMap<Material, HashMap<Integer, Filter>> cache = new HashMap<>();
-		HashMap<Integer, Filter> cacheTrash = new HashMap<>();
-		boolean cacheSetup = false;
+	public ArrayList<ItemStack> addItems (ArrayList<ItemStack> items) {
 		ArrayList<ItemStack> returned = new ArrayList<>();
-		for(ItemStack item : items){
+		for (ItemStack item : items) {
 			ArrayList<ItemStack> enter = new ArrayList<>();
 			enter.add(item);
 			
-			HashMap<Integer, Filter> filterMat;
-			if(!cache.containsKey(item.getType())){
-				filterMat = getfilters(this, item.getType());
-				cache.put(item.getType(), filterMat);
-			}else{
-				filterMat = cache.get(item.getType());
-			}
+			HashMap<Integer, Filter> filterMat = ItemTransferTick.getInstance().getFilterCached(this, item.getType());
+
 			ArrayList<Integer> toRemove = new ArrayList<>();
-			AddInFilters(filterMat, enter, toRemove);
-			if(enter.size() == 0){
+			addInFilters(filterMat, item.getType(), enter, toRemove);
+			if (enter.size() == 0) {
 				continue;
 			}
-			if(!cacheSetup){
-				cacheTrash = getfilters(this);
-				cacheSetup = true;
-			}
 
-			AddInFilters(cacheTrash, enter, toRemove);
-			if(!enter.isEmpty()){
+			HashMap<Integer, Filter> trash = ItemTransferTick.getInstance().getTrashCached(this);
+
+			addInFilters(trash, item.getType(), enter, toRemove);
+			if (!enter.isEmpty()) {
 				returned.addAll(enter);
 			}
 		}
 		return returned;
 	}
 
-	private void AddInFilters(HashMap<Integer, Filter> filters, ArrayList<ItemStack> enter, ArrayList<Integer> toRemove) {
-		for(Integer i : filters.keySet()){
+	private void addInFilters(HashMap<Integer, Filter> filters, Material mat, ArrayList<ItemStack> enter, ArrayList<Integer> toRemove) {
+		for (Filter filter : filters.values()) {
+			if (DataManager.cachedFullFilters.containsKey(new Pair<>(filter.filterID, mat))) continue;
 			try {
-				Block block = filters.get(i).loc.build().getBlock();
-				Material mat = block.getType();
-				if (Utilities.isContainer(mat) && Utilities.isSign(filters.get(i).sign.build().getBlock())) {
-					ArrayList<ItemStack> resultcache = new ArrayList<>();
-					for (ItemStack itemToEnter : enter) {
-						HashMap<Integer, ItemStack> result = ((InventoryHolder) block.getState()).getInventory().addItem(itemToEnter);
-						resultcache.addAll(result.values());
+				Block block = filter.loc.build().getBlock();
+				ArrayList<ItemStack> resultcache = new ArrayList<>();
+				Inventory containerInv;
+				try {
+					containerInv = ((InventoryHolder) block.getState()).getInventory();
+				} catch (Exception ex) {
+					if (!Utilities.isContainer(block.getType()) || !ItemSorter.versionHandler.isWallSign(filter.sign.build().getBlock())) {
+						toRemove.add(filter.filterID);
 					}
-					enter.clear();
-					enter.addAll(resultcache);
-				} else {
-					toRemove.add(i);
+					continue;
 				}
-			} catch ( FutureLocation.WorldNotLoaded ignored) {}
+				for (ItemStack itemToEnter : enter) {
+					HashMap<Integer, ItemStack> result = containerInv.addItem(itemToEnter);
+					if (!result.isEmpty()) {
+						DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
+					}
+					resultcache.addAll(result.values());
+				}
+				enter.clear();
+				enter.addAll(resultcache);
+				if (enter.isEmpty()) break;
+			} catch (FutureLocation.WorldNotLoaded ignored) {}
 		}
 		if (!toRemove.isEmpty()) {
-			for  (Integer i : toRemove){
+			for (Integer i : toRemove) {
 				Filter fil = filters.get(i);
 				this.filters.remove(fil.filterID);
 				filters.remove(i);

@@ -2,6 +2,8 @@ package me.clcondorcet.itemsorter.events;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.DataManager;
+import me.clcondorcet.itemsorter.data.Deposit;
+import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Bukkit;
@@ -26,6 +28,16 @@ public class WorldLoadEvent implements Listener {
                         DataManager.removeSystem(sys);
                         if (sys.checkExistsInWorld()) {
                             DataManager.addSystem(sys);
+                            for (Deposit depo : sys.getAllDeposits()) {
+                                if (!depo.checkExistsInWorld()) {
+                                    depo.delete(true, false, true);
+                                }
+                            }
+                            for (Filter filter : sys.getAllFilters()) {
+                                if (!filter.checkExistsInWorld()) {
+                                    filter.delete(true, false, true);
+                                }
+                            }
                         } else {
                             toDelete.add(sys);
                         }

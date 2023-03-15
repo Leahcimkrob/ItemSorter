@@ -2,12 +2,12 @@ package me.clcondorcet.itemsorter;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import me.clcondorcet.itemsorter.command.MainCommand;
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.database.DatabaseManager;
 import me.clcondorcet.itemsorter.events.EventsManager;
+import me.clcondorcet.itemsorter.processing.ItemSorterTick;
 import me.clcondorcet.itemsorter.multiversion.VersionHandler;
 import me.clcondorcet.itemsorter.config.ConfigManager;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
@@ -31,6 +31,7 @@ public class ItemSorter extends JavaPlugin {
 
 	public DatabaseManager databaseManager;
 	public AsyncAction asyncAction;
+	public ItemSorterTick itemSorterTick;
 
 	public static ItemSorter getInstance(){
 		return plugin;
@@ -45,6 +46,7 @@ public class ItemSorter extends JavaPlugin {
 		configManager = new ConfigManager();
 		asyncAction = new AsyncAction(this);
 		configManager.loadConfigs();
+		itemSorterTick = ItemSorterTick.getInstance();
 		prefix = ItemSorter.configManager.messages.msg_prefix;
 		EventsManager.loadEvents(this);
 		try {

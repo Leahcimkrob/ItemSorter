@@ -4,6 +4,7 @@ import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
+import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
@@ -51,31 +52,28 @@ public class OpenInventoryEvent implements Listener {
         }
     }
 
-    private void reArrange(InventoryHolder invHold, Location loc){
-        for(System sys : DataManager.getSystems()){
-            for(Filter filter : sys.getFilters()){
-                if(filter.loc.sameBlock(loc)){
-                    HashMap<Material, ArrayList<ItemStack>> items = new HashMap<>();
-                    for(ItemStack item : invHold.getInventory().getContents()){
-                        try{
-                            if(item.getType() != Material.AIR){
-                                if(items.containsKey(item.getType())){
-                                    items.get(item.getType()).add(item);
-                                }else{
-                                    ArrayList<ItemStack> itemArray = new ArrayList<>();
-                                    itemArray.add(item);
-                                    items.put(item.getType(), itemArray);
-                                }
-                                invHold.getInventory().remove(item);
-                            }
-                        }catch(Exception ignored){}
-                    }
-                    for(Material mat : items.keySet()){
-                        for(ItemStack item : items.get(mat)){
-                            invHold.getInventory().addItem(item);
+    private void reArrange(InventoryHolder invHold, Location location){
+        FutureLocation loc = new FutureLocation(location);
+        Filter filter = DataManager.filter.get(loc);
+        if (filter != null) {
+            HashMap<Material, ArrayList<ItemStack>> items = new HashMap<>();
+            for(ItemStack item : invHold.getInventory().getContents()){
+                try{
+                    if(item.getType() != Material.AIR){
+                        if(items.containsKey(item.getType())){
+                            items.get(item.getType()).add(item);
+                        }else{
+                            ArrayList<ItemStack> itemArray = new ArrayList<>();
+                            itemArray.add(item);
+                            items.put(item.getType(), itemArray);
                         }
+                        invHold.getInventory().remove(item);
                     }
-                    return;
+                }catch(Exception ignored){}
+            }
+            for(Material mat : items.keySet()){
+                for(ItemStack item : items.get(mat)){
+                    invHold.getInventory().addItem(item);
                 }
             }
         }
