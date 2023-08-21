@@ -7,6 +7,7 @@ import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.tools.BlockComparable;
 import me.clcondorcet.itemsorter.data.tools.SignRefreshable;
 import me.clcondorcet.itemsorter.database.schemas.SystemsTable;
+import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.processing.ItemTransferTick;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
@@ -21,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 
 import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;
 import static me.clcondorcet.itemsorter.listeners.EventsManager.autofilters;
@@ -443,25 +445,38 @@ public class System implements SignRefreshable, BlockComparable {
 			if (DataManager.cachedFullFilters.containsKey(new Pair<>(filter.filterID, mat))) continue;
 			try {
 				Block block = filter.loc.build().getBlock();
-				ArrayList<ItemStack> resultcache = new ArrayList<>();
-				Inventory containerInv;
-				try {
-					containerInv = ((InventoryHolder) block.getState()).getInventory();
-				} catch (Exception ex) {
-					if (!Utilities.isContainer(block.getType()) || !ItemSorter.versionHandler.isWallSign(filter.sign.build().getBlock())) {
-						toRemove.add(filter.filterID);
+				ArrayList<ItemStack> resultCache = new ArrayList<>();
+				AdvancedChest aChest = AdvancedChestsDependency.getAdvancedChest(filter.loc);
+				if (aChest != null) {
+					// Advanced Chest
+					for (ItemStack itemToEnter : enter) {
+						ArrayList<ItemStack> result = AdvancedChestsDependency.addItem(aChest, itemToEnter);
+						if (!result.isEmpty()) {
+							DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
+						}
+						resultCache.addAll(result);
 					}
-					continue;
-				}
-				for (ItemStack itemToEnter : enter) {
-					HashMap<Integer, ItemStack> result = containerInv.addItem(itemToEnter);
-					if (!result.isEmpty()) {
-						DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
+				} else {
+					// Normal Container
+					Inventory containerInv;
+					try {
+						containerInv = ((InventoryHolder) block.getState()).getInventory();
+					} catch (Exception ex) {
+						if (!Utilities.isContainer(block.getType()) || !ItemSorter.versionHandler.isWallSign(filter.sign.build().getBlock())) {
+							toRemove.add(filter.filterID);
+						}
+						continue;
 					}
-					resultcache.addAll(result.values());
+					for (ItemStack itemToEnter : enter) {
+						HashMap<Integer, ItemStack> result = containerInv.addItem(itemToEnter);
+						if (!result.isEmpty()) {
+							DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
+						}
+						resultCache.addAll(result.values());
+					}
 				}
 				enter.clear();
-				enter.addAll(resultcache);
+				enter.addAll(resultCache);
 				if (enter.isEmpty()) break;
 			} catch (FutureLocation.WorldNotLoaded ignored) {}
 		}

@@ -7,6 +7,7 @@ import me.clcondorcet.itemsorter.command.MainCommand;
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.database.DatabaseManager;
 import me.clcondorcet.itemsorter.listeners.EventsManager;
+import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.processing.ItemSorterTick;
 import me.clcondorcet.itemsorter.multiversion.VersionHandler;
 import me.clcondorcet.itemsorter.config.ConfigManager;
@@ -49,6 +50,9 @@ public class ItemSorter extends JavaPlugin {
 		itemSorterTick = ItemSorterTick.getInstance();
 		prefix = ItemSorter.configManager.messages.msg_prefix;
 		EventsManager.loadEvents(this);
+		if (AdvancedChestsDependency.isAPILoaded()) {
+			this.getLogger().info("Custom events from the plugin \"AdvancedChests\" registered.");
+		}
 		try {
 			databaseManager = new DatabaseManager(this);
 		} catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException | IOException e) {

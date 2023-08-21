@@ -3,7 +3,7 @@ package me.clcondorcet.itemsorter.listeners;
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.*;
 import me.clcondorcet.itemsorter.data.System;
-import me.clcondorcet.itemsorter.processing.ItemSorterTick;
+import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.processing.ItemTransferTick;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
@@ -185,7 +185,11 @@ public class GuiEvents implements Listener {
         }else if(inSystem.containsKey((Player)e.getPlayer())){
             inSystem.remove((Player)e.getPlayer());
         }else {
-            ItemTransferTick.getInstance().transfer(e.getInventory());
+            try {
+                if (AdvancedChestsDependency.isRealInventoryCloseEvent(e)) ItemTransferTick.getInstance().transfer(e.getInventory());
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
         Bukkit.getScheduler().runTask(ItemSorter.getInstance(), () -> ((Player) e.getPlayer()).updateInventory());
     }

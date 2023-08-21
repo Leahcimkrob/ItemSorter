@@ -26,6 +26,10 @@ public class ItemSorterTick {
     }
 
     private void runItemSorterTick() {
-        ItemTransferTick.getInstance().transferItems();
+        try {
+            ItemTransferTick.getInstance().transferItems();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 }

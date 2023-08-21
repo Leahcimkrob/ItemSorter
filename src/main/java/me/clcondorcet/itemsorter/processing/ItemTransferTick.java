@@ -5,6 +5,7 @@ import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.data.Deposit;
 import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
+import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,10 +15,10 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
+import us.lynuxcraft.deadsilenceiv.advancedchests.chest.gui.page.ChestPage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class ItemTransferTick {
 
@@ -100,36 +101,56 @@ public class ItemTransferTick {
                     return;
                 }
                 if(isBarrel){
-                    add(barrel, ((Barrel) barrel).getLocation());
+                    add(barrel, ((Barrel) barrel).getLocation(), true);
                 }else{
                     for(Chest block : chests){
-                        add(block, block.getLocation());
+                        if (block != null) add(block, block.getLocation(), true);
                     }
                 }
+            } else {
+                // Only if GuiEvent
+                AdvancedChest aChest = AdvancedChestsDependency.getAdvancedChest(inv);
+                if (aChest != null) add(null, aChest.getLocation(), false);
             }
-        }catch(NullPointerException ignored){
-        }catch(Exception ex){
+        } catch(Exception ex){
             ex.printStackTrace();
         }
     }
 
-    private void add(InventoryHolder invHold, Location location) {
+    private void add(InventoryHolder invHold, Location location, /* for AdvancedChests use only */ boolean closeInventory) {
         FutureLocation loc = new FutureLocation(location);
         Deposit deposit = DataManager.deposits.get(loc);
         if (deposit != null) {
             System sys = deposit.sys;
             ArrayList<ItemStack> items = new ArrayList<>();
-            for (ItemStack item : invHold.getInventory().getContents()) {
-                try {
-                    if(item.getType() != Material.AIR) {
-                        items.add(item);
-                        invHold.getInventory().remove(item);
+            AdvancedChest aChest = AdvancedChestsDependency.getAdvancedChest(location);
+            if (aChest != null) {
+                for (ChestPage<ItemStack> page : (Iterable<ChestPage<ItemStack>>) aChest.getPages().values()) {
+                    for (ItemStack item : page.getItems()) {
+                        if (item != null && item.getType() != Material.AIR) {
+                            items.add(item);
+                        }
                     }
-                } catch(Exception ignored) {}
-            }
-            ArrayList<ItemStack> result = sys.addItems(items);
-            for (ItemStack itemToReEnter : result) {
-                invHold.getInventory().addItem(itemToReEnter);
+                    page.setPreparedContent(new ItemStack[page.getItems().length]);
+                    page.reloadPage();
+                }
+                ArrayList<ItemStack> result = sys.addItems(items);
+                for (ItemStack itemToReEnter : result) {
+                    aChest.getChestType().getDispenserService().dispenseItemToChest(aChest, itemToReEnter);
+                }
+            } else {
+                for (ItemStack item : invHold.getInventory().getContents()) {
+                    try {
+                        if(item != null && item.getType() != Material.AIR) {
+                            items.add(item);
+                            invHold.getInventory().remove(item);
+                        }
+                    } catch(Exception ignored) {}
+                }
+                ArrayList<ItemStack> result = sys.addItems(items);
+                for (ItemStack itemToReEnter : result) {
+                    invHold.getInventory().addItem(itemToReEnter);
+                }
             }
         }
     }
