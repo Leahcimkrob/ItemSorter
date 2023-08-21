@@ -18,7 +18,7 @@ public class MigrationsManager {
     public static boolean applyMigrationFromVersion(int versionFrom, Database database) {
         ItemSorter.getInstance().getLogger().info("Checking for database migrations ... Your version: " + versionFrom + " last DB version: " + LAST_DB_VERSION);
         if (LAST_DB_VERSION > MIGRATIONS.length) {
-            ItemSorter.getInstance().getLogger().severe("WTF are you thinking CL ! You missed a DB migration !!!");
+            ItemSorter.getInstance().getLogger().severe("WTF are you thinking CLCONDORCET ! You missed a DB migration !!!");
             Bukkit.shutdown();
             return false;
         }

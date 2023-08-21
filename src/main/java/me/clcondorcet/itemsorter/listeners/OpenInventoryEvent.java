@@ -3,7 +3,6 @@ package me.clcondorcet.itemsorter.listeners;
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.data.Filter;
-import me.clcondorcet.itemsorter.data.System;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;

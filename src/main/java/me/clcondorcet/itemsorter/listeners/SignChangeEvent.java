@@ -8,7 +8,6 @@ import me.clcondorcet.itemsorter.utils.Utilities;
 import me.clcondorcet.itemsorter.data.Deposit;
 import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;

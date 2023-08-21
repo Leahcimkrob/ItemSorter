@@ -7,7 +7,6 @@ import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
