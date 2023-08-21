@@ -1,4 +1,4 @@
-package me.clcondorcet.itemsorter.events;
+package me.clcondorcet.itemsorter.listeners;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.config.Messages;
@@ -23,8 +23,8 @@ import org.bukkit.inventory.InventoryHolder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import static me.clcondorcet.itemsorter.events.EventsManager.autodeposits;
-import static me.clcondorcet.itemsorter.events.EventsManager.autofilters;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autofilters;
 
 /**
  * @author clcondorcet

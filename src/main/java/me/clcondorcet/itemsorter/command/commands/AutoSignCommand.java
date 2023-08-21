@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static me.clcondorcet.itemsorter.command.MainCommand.msg;
-import static me.clcondorcet.itemsorter.events.EventsManager.autodeposits;
-import static me.clcondorcet.itemsorter.events.EventsManager.autofilters;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autofilters;
 
 public class AutoSignCommand extends ItemSorterCommand {
 

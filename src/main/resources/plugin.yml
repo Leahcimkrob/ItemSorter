@@ -1,9 +1,11 @@
 name: ItemSorter
 main: me.clcondorcet.itemsorter.ItemSorter
-version: 1.4.1_DEV
+version: 1.4.2_DEV
 api-version: 1.13
 author: clcondorcet
 description: An item sorter for minecraft DEV branch ! This build is intended for test ONLY !
+softdepend:
+  - AdvancedChests
 
 commands:
   ItemSorter:

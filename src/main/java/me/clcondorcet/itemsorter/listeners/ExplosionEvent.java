@@ -1,4 +1,4 @@
-package me.clcondorcet.itemsorter.events;
+package me.clcondorcet.itemsorter.listeners;
 
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.utils.FutureLocation;

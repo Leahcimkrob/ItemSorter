@@ -1,7 +1,7 @@
 package me.clcondorcet.itemsorter.multiversion;
 
 import me.clcondorcet.itemsorter.ItemSorter;
-import me.clcondorcet.itemsorter.events.ServerLoadEvent;
+import me.clcondorcet.itemsorter.listeners.ServerLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

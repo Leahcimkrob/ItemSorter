@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import me.clcondorcet.itemsorter.command.MainCommand;
 import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.database.DatabaseManager;
-import me.clcondorcet.itemsorter.events.EventsManager;
+import me.clcondorcet.itemsorter.listeners.EventsManager;
 import me.clcondorcet.itemsorter.processing.ItemSorterTick;
 import me.clcondorcet.itemsorter.multiversion.VersionHandler;
 import me.clcondorcet.itemsorter.config.ConfigManager;

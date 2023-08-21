@@ -22,8 +22,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import static me.clcondorcet.itemsorter.events.EventsManager.autodeposits;
-import static me.clcondorcet.itemsorter.events.EventsManager.autofilters;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;
+import static me.clcondorcet.itemsorter.listeners.EventsManager.autofilters;
 
 /**
  * @author clcondorcet
