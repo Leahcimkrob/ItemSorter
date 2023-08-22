@@ -1,6 +1,7 @@
 package me.clcondorcet.itemsorter.utils;
 
 import com.google.gson.Gson;
+import me.clcondorcet.itemsorter.ItemSorter;
 import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
@@ -26,10 +27,16 @@ public class VersionChecker {
     public String lastVersion;
 
     public VersionChecker() {
+        ItemSorter.getInstance().getLogger().info("Checking for updates ...");
         this.lastVersion = getLastVersion();
         if (lastVersion.equals("Error")) {
             needUpdate = false;
         } else needUpdate = !lastVersion.equals(pluginVersion);
+        if (needUpdate) {
+            ItemSorter.getInstance().getLogger().info("An update is available! Please upgrade ItemSorter here https://www.spigotmc.org/resources/itemsorter.85370/");
+        } else {
+            ItemSorter.getInstance().getLogger().info("No updates found. You are up to date!");
+        }
     }
 
     private String getLastVersion(){
@@ -37,10 +44,9 @@ public class VersionChecker {
             Gson gson = new Gson();
             PluginData data = new PluginData(pluginVersion, Bukkit.getVersion(), Bukkit.getName());
             String jsonResponse = getConnection("https://clcondorcet.me/api/plugins/ItemSorter/v" + apiVersion, gson.toJson(data));
-
             APIData apiData = gson.fromJson(jsonResponse, APIData.class);
-            return apiData.lastVersion;
-        } catch (Exception ex) {
+            return apiData.lastversion;
+        } catch (Throwable ex) {
             return "Error";
         }
     }
@@ -68,20 +74,32 @@ public class VersionChecker {
     }
 
     private static class APIData {
-        private String lastVersion;
-        private String[] allVersions;
+        private String name;
+        private String author;
+        private String lastversion;
+        private String[] versions;
 
-        public APIData(String lastVersion, String[] allVersions) {
-            this.lastVersion = lastVersion;
-            this.allVersions = allVersions;
+        public APIData(String name, String author, String lastversion, String[] versions) {
+            this.name = name;
+            this.author = author;
+            this.lastversion = lastversion;
+            this.versions = versions;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getAuthor() {
+            return author;
         }
 
         public String getLastVersion() {
-            return lastVersion;
+            return lastversion;
         }
 
         public String[] getAllVersions() {
-            return allVersions;
+            return versions;
         }
     }
 

@@ -21,7 +21,7 @@ public class JoinEvent implements Listener {
             if(ItemSorter.versionChecker.needUpdate){
                 e.getPlayer().sendMessage("§6-------- §eItem§cSorter §6--------"
                         , "§e> §aItemSorter need an update !"
-                        , "§eCurrent verion: §c" + VersionChecker.pluginVersion
+                        , "§eCurrent version: §c" + VersionChecker.pluginVersion
                         , "§eThe new version is: §a" + ItemSorter.versionChecker.lastVersion
                         , "§6https://www.spigotmc.org/resources/itemsorter.85370/"
                         , "§6----------------------------");
