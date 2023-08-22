@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author clcondorcet
  */
 public class VersionChecker {
-    public static String pluginVersion = "1.3.5";
+    public static String pluginVersion = "1.4.3";
     public static int apiVersion = 2;
     public boolean needUpdate;
     public String lastVersion;
