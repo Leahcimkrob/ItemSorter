@@ -56,7 +56,7 @@ public class VersionHandler {
                     loc.getZ(),
                     0.0f,
                     0.0f,
-                    entityTypesClass.getDeclaredField("F").get(null),
+                    entityTypesClass.getDeclaredField(getEntityTypeFallingBlockField()).get(null),
                     getMaterialIdNBTQuartz(),
                     vec3D,
                     0.0d);
@@ -207,22 +207,45 @@ public class VersionHandler {
         return null;
     }
 
-    public String getDataWRFBoolean(){
-        if(isVersionSupOrEqualThan("1_19")){
+    public String getDataWatcherRegistryFieldBoolean(){
+        if (isVersionSupOrEqualThan("1_20")) {
+            return "k";
+        } else if (isVersionSupOrEqualThan("1_19")) {
             return "j";
-        } else if (isVersionSupOrEqualThan("1_13")){
+        } else if (isVersionSupOrEqualThan("1_13")) {
             return "i";
-        }else if(isVersionSupOrEqualThan("1_10")){
+        } else if (isVersionSupOrEqualThan("1_10")) {
             return "h";
-        }else{
+        } else {
             return null;
         }
     }
 
+    public String getDataWatcherRegistryFieldBlockPosition(){
+        if (isVersionSupOrEqualThan("1_20")) {
+            return "n";
+        } else if (isVersionSupOrEqualThan("1_19")) {
+            return "m";
+        } else {
+            return null;
+        }
+    }
+
+    public String getEntityTypeFallingBlockField(){
+        if (isVersionSupOrEqualThan("1_20")) {
+            return "L";
+        } else if (isVersionSupOrEqualThan("1_19")) {
+            return "F";
+        } else {
+            return null;
+        }
+    }
+
+    // Determines the values used in getMaterialIdNBTQuartz()
     public static int getQuartzIDNMS() {
         try {
             Class blocksClass = Class.forName("net.minecraft.world.level.block.Blocks");
-            Object quartzBlock = blocksClass.getField("fM").get(null); // gK for 1.19.3 ; fM for 1.18.2
+            Object quartzBlock = blocksClass.getField("hd").get(null); // hd for 1.20.1 ; gK for 1.19.3 ; fM for 1.18.2
 
             Class blockClass = Class.forName("net.minecraft.world.level.block.Block");
             Field blockDataField = blockClass.getDeclaredField("d");
@@ -236,12 +259,16 @@ public class VersionHandler {
 
             return id;
         } catch (Exception ex) {
+            //Bukkit.broadcastMessage("BRIAT");
             return 0;
         }
     }
 
+    // To get the value, replace by getQuartzIDNMS()
     public int getMaterialIdNBTQuartz(){
-        if (isVersionSupOrEqualThan("1_19")) {
+        if (isVersionSupOrEqualThan("1_20")) {
+            return 9095;
+        } else if (isVersionSupOrEqualThan("1_19")) {
             return 8839;
         } else if (isVersionSupOrEqualThan("1_18")){
             return 6944;
@@ -373,8 +400,8 @@ public class VersionHandler {
 
                 ArrayList<Object> list = new ArrayList<>();
                 list.add(dataWatcher_ItemClass_to_b.invoke(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64)));
-                list.add(dataWatcher_ItemClass_to_b.invoke(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(ItemSorter.versionHandler.getDataWRFBoolean()).get(null)), true)));
-                list.add(dataWatcher_ItemClass_to_b.invoke(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(8, DataWatcherRegistryClass.getDeclaredField("m").get(null)), blockPosition)));
+                list.add(dataWatcher_ItemClass_to_b.invoke(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(getDataWatcherRegistryFieldBoolean()).get(null)), true)));
+                list.add(dataWatcher_ItemClass_to_b.invoke(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(8, DataWatcherRegistryClass.getDeclaredField(getDataWatcherRegistryFieldBlockPosition()).get(null)), blockPosition)));
 
                 Class packetEntityMetadataClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata");
 
@@ -401,7 +428,7 @@ public class VersionHandler {
                 Class dataWatcherObjectClass = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
                 Class DataWatcherRegistryClass = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
                 list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
-                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(ItemSorter.versionHandler.getDataWRFBoolean()).get(null)), true));
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(getDataWatcherRegistryFieldBoolean()).get(null)), true));
                 Class entityClass = Class.forName("net.minecraft.world.entity.Entity");
                 Object dataWatcher = dataWatcherClass.getDeclaredConstructor(entityClass).newInstance(new Object[]{null});
                 Field f = dataWatcherClass.getDeclaredField("f");
@@ -422,14 +449,14 @@ public class VersionHandler {
         } else if (isVersionSupOrEqualThan("1_17")) {
             try{
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
-                Object packetSpawnEntity = ItemSorter.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
+                Object packetSpawnEntity = getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
                 ArrayList<Object> list = new ArrayList<>();
                 Class dataWatcherClass = Class.forName("net.minecraft.network.syncher.DataWatcher");
                 Class dataWatcher_ItemClass = dataWatcherClass.getClasses()[0];
                 Class dataWatcherObjectClass = Class.forName("net.minecraft.network.syncher.DataWatcherObject");
                 Class DataWatcherRegistryClass = Class.forName("net.minecraft.network.syncher.DataWatcherRegistry");
                 list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
-                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(ItemSorter.versionHandler.getDataWRFBoolean()).get(null)), true));
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(getDataWatcherRegistryFieldBoolean()).get(null)), true));
                 Class entityClass = Class.forName("net.minecraft.world.entity.Entity");
                 Object dataWatcher = dataWatcherClass.getDeclaredConstructor(entityClass).newInstance(new Object[]{null});
                 Field f = dataWatcherClass.getDeclaredField("f");
@@ -457,7 +484,7 @@ public class VersionHandler {
                 Class dataWatcherObjectClass = Class.forName("net.minecraft.server." + ItemSorter.version + ".DataWatcherObject");
                 Class DataWatcherRegistryClass = Class.forName("net.minecraft.server." + ItemSorter.version + ".DataWatcherRegistry");
                 list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(0, DataWatcherRegistryClass.getDeclaredField("a").get(null)), (byte) 64));
-                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(ItemSorter.versionHandler.getDataWRFBoolean()).get(null)), true));
+                list.add(dataWatcher_ItemClass.getConstructors()[0].newInstance(dataWatcherObjectClass.getConstructors()[0].newInstance(5, DataWatcherRegistryClass.getDeclaredField(ItemSorter.versionHandler.getDataWatcherRegistryFieldBoolean()).get(null)), true));
                 Class packetEntityMetadataClass = Class.forName("net.minecraft.server." + ItemSorter.version + ".PacketPlayOutEntityMetadata");
                 Field a = packetEntityMetadataClass.getDeclaredField("a");
                 a.setAccessible(true);
@@ -502,7 +529,17 @@ public class VersionHandler {
     }
 
     public void sendPacket(Player p, Object packet) {
-        if (isVersionSupOrEqualThan("1_18")) {
+        if (isVersionSupOrEqualThan("1_20")) {
+            try {
+                Method handle = p.getClass().getMethod("getHandle");
+                Object craftPlayer = handle.invoke(p);
+                Object playerConnection = craftPlayer.getClass().getField("c").get(craftPlayer);
+                Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+                playerConnection.getClass().getMethod("a", packetClass).invoke(playerConnection, packet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (isVersionSupOrEqualThan("1_18")) {
             try {
                 Method handle = p.getClass().getMethod("getHandle");
                 Object craftPlayer = handle.invoke(p);
