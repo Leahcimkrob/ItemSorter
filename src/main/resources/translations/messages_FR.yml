@@ -20,6 +20,7 @@ messages:
   notInRange: "&4La base est trop loin !"
   baseCreated: "&2La base &6%name% &2a été enregistrée !"
   alreadyDepositorFilter: "&4Ce block est déjà un filtre ou un dépôt !"
+  error: "&4Une erreur s'est produite. Veuillez réessayer ou contacter un administrateur."
 inventory:
   trustRemove: "&7Shift-Clique-Droit pour enlever des membres"
   trustAdd: "&7Cliquez pour ajouter aux membres"
@@ -41,6 +42,10 @@ inventory:
   backName: "&cRetour"
 sign:
   prefix: "&6[&eItem&cSorter&6]"
+  loading: "&bChargement ..."
+  base: "&b= BASE ="
+  deposit: "&b- Dépôt -"
+  filter: "&b- Filtre -"
   input_is: "is"
   input_isd: "isd"
   input_isf: "isf"
@@ -93,7 +98,7 @@ command:
     trustSeparator: ", "
     filters: "&6Filtres: &e%num%"
     filtersHover: "&7Cliquez ici pour voir la liste des filtres"
-    deposits: "&6Depôts: &e%num%"
+    deposits: "&6Dépôts: &e%num%"
     depositsHover: "&7Cliquez ici pour voir la liste des dépôts"
     nameNotExist: "&4La base &6%base% &4n'existe pas ou n'est pas chargée."
     noName: "&4Vous devez entrer un nom !"
@@ -134,7 +139,7 @@ command:
     noBlocsFound: "&4Aucun blocs trouvés avec ces paramètres."
     notInSameWorld: "&4Vous n'êtes pas dans le même monde."
     notPlayer: "&4Cette commande est réservé aux joueurs."
-    complete: "&aLes blocs sont maintenant visible à travers les murs pendant &610 secondes&4."
+    complete: "&aLes blocs sont maintenant visible à travers les murs pendant &610 secondes&a."
     lowerVersion: "&4Cette commande n'est pas disponible pour votre version de minecraft."
   autosign:
     complete: "&aVous pouvez placer des panneaux sur des coffres ou des tonneaux. Faites &6/%cmd% autosign stop &apour arrêté."

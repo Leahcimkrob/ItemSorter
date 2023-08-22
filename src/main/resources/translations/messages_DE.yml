@@ -21,6 +21,7 @@ messages:
   notInRange: "&4Das ist nicht in der Nähe."
   baseCreated: "&2Base &6%name% &2wurde erstellt."
   alreadyDepositorFilter: "&4Diese Truhe ist bereits ein Deposite oder ein Filter."
+  error: "&4Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an einen Administrator."
 inventory:
   trustRemove: "&7Shift-Rechts-Klick um die Erlaubnis zu entfernen"
   trustAdd: "&7Klick um die Erlaubnis hinzu zufügen."
@@ -42,6 +43,10 @@ inventory:
   backName: "&cZurück"
 sign:
   prefix: "&6[&eItem&cSorter&6]"
+  loading: "&bWird geladen ..."
+  base: "&b= BASE ="
+  deposit: "&b- Kaution -"
+  filter: "&b- Filter -"
   input_is: "is"
   input_isd: "isd"
   input_isf: "isf"
@@ -136,9 +141,9 @@ command:
     notInSameWorld: "&cDu bist nicht in der gleichen Welt."
     notPlayer: "&Blöcke sind jetzt durch Wände sichtbar für &610 sekunden."
     lowerVersion: "&cDiese Funktion ist in Ihrer Minecraft-Version nicht verfügbar"
+    complete: "&aBlöcke sind jetzt &610 Sekunden &alang durch Wände sichtbar."
   autosign:
-    complete: "&aDu kannst nun Schilder an einer Truhe oder Fass platzieren. Benutze &6/%cmd% autosign
-      stop &azum stoppen."
+    complete: "&aDu kannst nun Schilder an einer Truhe oder Fass platzieren. Benutze &6/%cmd% autosign stop &azum stoppen."
     stop: "&aAutosign gestoppt."
     noBase: "&cDu musst eine Base-Truhe namen eingeben!"
     noOption: "&cDu brauch einen &6filter&c, &6deposit &coder &6stop"

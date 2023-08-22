@@ -1,10 +1,11 @@
 radius: 16
 verticalRadius: 80
 maxBases:
-  default: 5 #can be bypassed by the permission: "is.unlimitedBases"
+  default: 5 #Can be bypassed by the permission: "itemsorter.unlimitedBases"
   others: #permissions
-    - "is.vip": 10
-    - "is.vipplus": 20
-    - "is.moderator": 100
-orderChestContent: true
+    - "itemsorter.vip": 10
+    - "itemsorter.vipplus": 20
+    - "itemsorter.moderator": 100
+orderChestContent: true # Sort filters after closing it (doesn't work with custom chest from AdvancedChests)
 Language: "EN"
+customsqlitelib: false # Use only if SQLite doesn't work in your machine.

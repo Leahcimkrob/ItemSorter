@@ -20,6 +20,7 @@ messages:
   notInRange: "&4This is not in range!"
   baseCreated: "&2Base &6%name% &2is created!"
   alreadyDepositorFilter: "&4This container is already a deposit or a filter!"
+  error: "&4An error occurred. Please try again or contact an admin."
 inventory:
   trustRemove: "&7Shift-Right-Click to remove this trust"
   trustAdd: "&7Click to add to trusts"
@@ -41,6 +42,10 @@ inventory:
   backName: "&cBack"
 sign:
   prefix: "&6[&eItem&cSorter&6]"
+  loading: "&bLoading ..."
+  base: "&b= BASE ="
+  deposit: "&b- Deposit -"
+  filter: "&b- Filter -"
   input_is: "is"
   input_isd: "isd"
   input_isf: "isf"
@@ -134,7 +139,7 @@ command:
     noBlocsFound: "&4No blocs was find with those parameters."
     notInSameWorld: "&4Your are not on the same world."
     notPlayer: "&4This command is reserved for Players."
-    complete: "&aBlocks are now visible through walls for &610 seconds&4."
+    complete: "&aBlocks are now visible through walls for &610 seconds&a."
     lowerVersion: "&4This feature is not available in your minecraft version."
   autosign:
     complete: "&aYou can now place sign on chests or barrels. Do &6/%cmd% autosign stop &ato stop."
