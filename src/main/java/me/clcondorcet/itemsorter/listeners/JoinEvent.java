@@ -19,13 +19,14 @@ public class JoinEvent implements Listener {
         }
         if(e.getPlayer().isOp()){
             if(ItemSorter.versionChecker.needUpdate){
-                e.getPlayer().sendMessage("§6-------- §eItem§cSorter §6--------"
+                e.getPlayer().sendMessage(new String[]{
+                        "§6-------- §eItem§cSorter §6--------"
                         , "§e> §aItemSorter need an update !"
                         , "§eCurrent version: §c" + VersionChecker.pluginVersion
                         , "§eThe new version is: §a" + ItemSorter.versionChecker.lastVersion
                         , "§6https://www.spigotmc.org/resources/itemsorter.85370/"
-                        , "§6----------------------------");
-
+                        , "§6----------------------------"
+                });
             }
         }
     }

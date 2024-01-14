@@ -1,6 +1,7 @@
 package me.clcondorcet.itemsorter.database;
 
 import me.clcondorcet.itemsorter.ItemSorter;
+import me.clcondorcet.itemsorter.multiversion.VersionHandler;
 import org.bukkit.entity.Item;
 
 import java.io.*;
@@ -22,6 +23,8 @@ public class Database {
     private final DatabaseType type;
     private String databaseName;
     private boolean default_lib = true;
+
+    public static boolean canReturnKey = !VersionHandler.isVersionSupOrEqualThan("1_20_2");
 
     public Database(String Host, String db, String username, String password) {
         databaseName = db;
@@ -166,16 +169,29 @@ public class Database {
     }
 
     public int setAndReturnKey(String query, Object... variables) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        try (Connection con = this.open(); PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            QueryVariables vars = new QueryVariables(variables);
-            vars.setValues(stmt);
-            stmt.executeUpdate();
-            ResultSet res = stmt.getGeneratedKeys();
-            res.next();
-            return res.getInt(1);
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            throw e;
+        if (canReturnKey) {
+            try (Connection con = this.open(); PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                QueryVariables vars = new QueryVariables(variables);
+                vars.setValues(stmt);
+                stmt.executeUpdate();
+                ResultSet res = stmt.getGeneratedKeys();
+                res.next();
+                return res.getInt(1);
+            } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        } else {
+            try (Connection con = this.open(); PreparedStatement stmt = con.prepareStatement(query + " RETURNING rowid")) {
+                QueryVariables vars = new QueryVariables(variables);
+                vars.setValues(stmt);
+                ResultSet res = stmt.executeQuery();
+                res.next();
+                return res.getInt(1);
+            } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                throw e;
+            }
         }
     }
 
@@ -187,13 +203,22 @@ public class Database {
      * @return The last inserted ID (AUTO_INCREMENT)
      */
     public int setAndReturnKey(Connection con, String query, Object... vars) throws SQLException {
-        PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        QueryVariables var = new QueryVariables(vars);
-        var.setValues(stmt);
-        stmt.executeUpdate();
-        ResultSet res = stmt.getGeneratedKeys();
-        res.next();
-        return res.getInt(1);
+        if (canReturnKey) {
+            PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            QueryVariables var = new QueryVariables(vars);
+            var.setValues(stmt);
+            stmt.executeUpdate();
+            ResultSet res = stmt.getGeneratedKeys();
+            res.next();
+            return res.getInt(1);
+        } else {
+            PreparedStatement stmt = con.prepareStatement(query + " RETURNING rowid");
+            QueryVariables var = new QueryVariables(vars);
+            var.setValues(stmt);
+            ResultSet res = stmt.executeQuery();
+            res.next();
+            return res.getInt(1);
+        }
     }
 
     public long set(Connection con, String query, Object... vars) throws SQLException {

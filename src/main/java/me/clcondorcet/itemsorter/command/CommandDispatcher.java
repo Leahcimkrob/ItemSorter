@@ -1,6 +1,5 @@
 package me.clcondorcet.itemsorter.command;
 
-import com.sun.istack.internal.NotNull;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ abstract class CommandDispatcher extends ItemSorterCommand {
     public ArrayList<ItemSorterCommand> children;
     public ItemSorterCommand defaultCommand;
 
-    public CommandDispatcher(String name, List<ItemSorterCommand> children, @NotNull ItemSorterCommand defaultCommand, String... aliases) {
+    public CommandDispatcher(String name, List<ItemSorterCommand> children, ItemSorterCommand defaultCommand, String... aliases) {
         super(name, aliases);
         this.children = new ArrayList<>();
         if (children != null) {

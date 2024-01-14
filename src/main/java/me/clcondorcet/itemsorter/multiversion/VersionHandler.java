@@ -2,6 +2,15 @@ package me.clcondorcet.itemsorter.multiversion;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.listeners.ServerLoadEvent;
+import net.minecraft.core.BlockPosition;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
+import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
+import net.minecraft.network.syncher.DataWatcher;
+import net.minecraft.network.syncher.DataWatcherObject;
+import net.minecraft.network.syncher.DataWatcherRegistry;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.phys.Vec3D;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,10 +32,10 @@ import java.util.UUID;
  */
 public class VersionHandler {
 
-    public Integer[] version;
+    public static Integer[] version;
 
     public VersionHandler(){
-        this.version = getVersion(ItemSorter.version);
+        version = getVersion(ItemSorter.version);
     }
 
     public Object getpacketSpawnEntityFallingBlock(Class packetSpawnEntityClass, Location loc, Integer id) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, InstantiationException {
@@ -59,8 +68,8 @@ public class VersionHandler {
                     entityTypesClass.getDeclaredField(getEntityTypeFallingBlockField()).get(null),
                     getMaterialIdNBTQuartz(),
                     vec3D,
-                    0.0d);
-
+                    0.0d
+            );
             return packet;
         } else if(isVersionSupOrEqualThan("1_18")){
             Class<?> entityTypesClass = Class.forName("net.minecraft.world.entity.EntityTypes");
@@ -245,7 +254,7 @@ public class VersionHandler {
     public static int getQuartzIDNMS() {
         try {
             Class blocksClass = Class.forName("net.minecraft.world.level.block.Blocks");
-            Object quartzBlock = blocksClass.getField("hd").get(null); // hd for 1.20.1 ; gK for 1.19.3 ; fM for 1.18.2
+            Object quartzBlock = blocksClass.getField("hd").get(null); // hd for 1.20.1 and 1.20.2 ; gK for 1.19.3 ; fM for 1.18.2
 
             Class blockClass = Class.forName("net.minecraft.world.level.block.Block");
             Field blockDataField = blockClass.getDeclaredField("d");
@@ -255,7 +264,7 @@ public class VersionHandler {
 
             int id = (int) blockClass.getMethod("i", Class.forName("net.minecraft.world.level.block.state.IBlockData")).invoke(null, blockData);
 
-            //Bukkit.broadcastMessage(id + "");
+            Bukkit.broadcastMessage(id + "");
 
             return id;
         } catch (Exception ex) {
@@ -266,7 +275,9 @@ public class VersionHandler {
 
     // To get the value, replace by getQuartzIDNMS()
     public int getMaterialIdNBTQuartz(){
-        if (isVersionSupOrEqualThan("1_20")) {
+        if (isVersionSupOrEqualThan("1_20_2")) {
+            return 9235;
+        } else if (isVersionSupOrEqualThan("1_20")) {
             return 9095;
         } else if (isVersionSupOrEqualThan("1_19")) {
             return 8839;
@@ -383,10 +394,10 @@ public class VersionHandler {
     }
 
     public void glow(Location loc, Player p, int id){
-        if(isVersionSupOrEqualThan("1_19")){
-            try {
+        try {
+            if(isVersionSupOrEqualThan("1_19")){
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
-                Object packetSpawnEntity = ItemSorter.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
+                Object packetSpawnEntity = getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
                 sendPacket(p, packetSpawnEntity);
 
                 Class dataWatcherClass = Class.forName("net.minecraft.network.syncher.DataWatcher");
@@ -415,11 +426,7 @@ public class VersionHandler {
                 Object packetEntityMetadata = packetEntityMetadataClassConstructor.newInstance(id, list);
 
                 sendPacket(p, packetEntityMetadata);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else if (isVersionSupOrEqualThan("1_18")) {
-            try{
+            } else if (isVersionSupOrEqualThan("1_18")) {
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
                 Object packetSpawnEntity = ItemSorter.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
                 ArrayList<Object> list = new ArrayList<>();
@@ -443,11 +450,7 @@ public class VersionHandler {
                 b.set(packetEntityMetadata, list);
                 sendPacket(p, packetSpawnEntity);
                 sendPacket(p, packetEntityMetadata);
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        } else if (isVersionSupOrEqualThan("1_17")) {
-            try{
+            } else if (isVersionSupOrEqualThan("1_17")) {
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity");
                 Object packetSpawnEntity = getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
                 ArrayList<Object> list = new ArrayList<>();
@@ -471,11 +474,7 @@ public class VersionHandler {
                 b.set(packetEntityMetadata, list);
                 sendPacket(p, packetSpawnEntity);
                 sendPacket(p, packetEntityMetadata);
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        } else {
-            try{
+            } else {
                 Class packetSpawnEntityClass = Class.forName("net.minecraft.server." + ItemSorter.version + ".PacketPlayOutSpawnEntity");
                 Object packetSpawnEntity = ItemSorter.versionHandler.getpacketSpawnEntityFallingBlock(packetSpawnEntityClass, loc, id);
                 ArrayList<Object> list = new ArrayList<>();
@@ -495,9 +494,9 @@ public class VersionHandler {
                 b.set(packetEntityMetadata, list);
                 sendPacket(p, packetSpawnEntity);
                 sendPacket(p, packetEntityMetadata);
-            }catch(Exception ex){
-                ex.printStackTrace();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -529,59 +528,54 @@ public class VersionHandler {
     }
 
     public void sendPacket(Player p, Object packet) {
-        if (isVersionSupOrEqualThan("1_20")) {
-            try {
+        try {
+            if (isVersionSupOrEqualThan("1_20_2")) {
+                Method handle = p.getClass().getMethod("getHandle");
+                Object craftPlayer = handle.invoke(p);
+                Object playerConnection = craftPlayer.getClass().getField("c").get(craftPlayer);
+                Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
+                Class<?> packetSendListenerClass = Class.forName("net.minecraft.network.PacketSendListener");
+                playerConnection.getClass().getMethod("a", packetClass, packetSendListenerClass).invoke(playerConnection, packet, null);
+            } else if (isVersionSupOrEqualThan("1_20")) {
                 Method handle = p.getClass().getMethod("getHandle");
                 Object craftPlayer = handle.invoke(p);
                 Object playerConnection = craftPlayer.getClass().getField("c").get(craftPlayer);
                 Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
                 playerConnection.getClass().getMethod("a", packetClass).invoke(playerConnection, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (isVersionSupOrEqualThan("1_18")) {
-            try {
+            } else if (isVersionSupOrEqualThan("1_18")) {
                 Method handle = p.getClass().getMethod("getHandle");
                 Object craftPlayer = handle.invoke(p);
                 Object playerConnection = craftPlayer.getClass().getField("b").get(craftPlayer);
                 Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
                 playerConnection.getClass().getMethod("a", packetClass).invoke(playerConnection, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (isVersionSupOrEqualThan("1_17")){
-            try {
+            } else if (isVersionSupOrEqualThan("1_17")){
                 Method handle = p.getClass().getMethod("getHandle");
                 Object craftPlayer = handle.invoke(p);
                 Object playerConnection = craftPlayer.getClass().getField("b").get(craftPlayer);
                 Class<?> packetClass = Class.forName("net.minecraft.network.protocol.Packet");
                 playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }else{
-            try {
+            } else {
                 Method handle = p.getClass().getMethod("getHandle");
                 Object craftPlayer = handle.invoke(p);
                 Object playerConnection = craftPlayer.getClass().getField("playerConnection").get(craftPlayer);
                 Class<?> packetClass = Class.forName("net.minecraft.server." + ItemSorter.version + ".Packet");
                 playerConnection.getClass().getMethod("sendPacket", packetClass).invoke(playerConnection, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public boolean isVersionSupOrEqualThan(String version){
+    public static boolean isVersionSupOrEqualThan(String version){
         Integer[] versionInt = getVersion(version);
-        for(int i = 0; i < (Math.max(versionInt.length, this.version.length)); i++){
-            if(versionInt.length == i){
-                return this.version[i] == 0;
-            }
-            if(this.version.length == i){
+        for (int i = 0; i < (Math.max(versionInt.length, VersionHandler.version.length)); i++) {
+            if (versionInt.length == i) {
                 return true;
             }
-            if(versionInt[i] > this.version[i]){
+            if (VersionHandler.version.length == i) {
+                return true;
+            }
+            if (versionInt[i] > VersionHandler.version[i]) {
                 return false;
             }
         }
@@ -589,15 +583,14 @@ public class VersionHandler {
     }
 
     public static Integer[] getVersion(String version){
-        String[] splitedVersion = version.replaceFirst("v", "").split("_");
+        String[] splitedVersion = version.replaceAll("R", "").replaceFirst("v", "").split("_");
         ArrayList<Integer> newVersion = new ArrayList<>();
-        for(String values : splitedVersion){
-            if(values.split("\\D").length > 1){
+        for (String values : splitedVersion) {
+            if (values.split("\\D").length > 1) {
                break;
             }
             newVersion.add(Integer.parseInt(values));
         }
-        Integer[] result = newVersion.toArray(new Integer[0]);
-        return result;
+        return newVersion.toArray(new Integer[0]);
     }
 }

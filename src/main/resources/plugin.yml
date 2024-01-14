@@ -1,6 +1,6 @@
 name: ItemSorter
 main: me.clcondorcet.itemsorter.ItemSorter
-version: 1.4.3
+version: 1.4.4_DEV
 api-version: 1.13
 author: clcondorcet
 description: An item sorter for minecraft
