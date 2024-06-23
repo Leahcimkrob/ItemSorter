@@ -2,15 +2,6 @@ package me.clcondorcet.itemsorter.multiversion;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.listeners.ServerLoadEvent;
-import net.minecraft.core.BlockPosition;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
-import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
-import net.minecraft.network.syncher.DataWatcher;
-import net.minecraft.network.syncher.DataWatcherObject;
-import net.minecraft.network.syncher.DataWatcherRegistry;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.phys.Vec3D;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -231,7 +222,9 @@ public class VersionHandler {
     }
 
     public String getDataWatcherRegistryFieldBlockPosition(){
-        if (isVersionSupOrEqualThan("1_20")) {
+        if (isVersionSupOrEqualThan("1_20_6")) {
+            return "o";
+        } else if (isVersionSupOrEqualThan("1_20")) {
             return "n";
         } else if (isVersionSupOrEqualThan("1_19")) {
             return "m";
@@ -241,7 +234,9 @@ public class VersionHandler {
     }
 
     public String getEntityTypeFallingBlockField(){
-        if (isVersionSupOrEqualThan("1_20")) {
+        if (isVersionSupOrEqualThan("1_20_6")) {
+            return "O";
+        } else if (isVersionSupOrEqualThan("1_20")) {
             return "L";
         } else if (isVersionSupOrEqualThan("1_19")) {
             return "F";
@@ -254,7 +249,7 @@ public class VersionHandler {
     public static int getQuartzIDNMS() {
         try {
             Class blocksClass = Class.forName("net.minecraft.world.level.block.Blocks");
-            Object quartzBlock = blocksClass.getField("hd").get(null); // hd for 1.20.1 and 1.20.2 ; gK for 1.19.3 ; fM for 1.18.2
+            Object quartzBlock = blocksClass.getField("hd").get(null); // hd for 1.20.6, 1.20.1 and 1.20.2 ; gK for 1.19.3 ; fM for 1.18.2
 
             Class blockClass = Class.forName("net.minecraft.world.level.block.Block");
             Field blockDataField = blockClass.getDeclaredField("d");
@@ -275,7 +270,7 @@ public class VersionHandler {
 
     // To get the value, replace by getQuartzIDNMS()
     public int getMaterialIdNBTQuartz(){
-        if (isVersionSupOrEqualThan("1_20_2")) {
+        if (isVersionSupOrEqualThan("1_20_2")) { // good for 1.20.6
             return 9235;
         } else if (isVersionSupOrEqualThan("1_20")) {
             return 9095;

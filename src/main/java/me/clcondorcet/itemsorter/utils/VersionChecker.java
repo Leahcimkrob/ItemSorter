@@ -11,17 +11,12 @@ import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author clcondorcet
  */
 public class VersionChecker {
-    public static String pluginVersion = "1.4.3";
+    public static String pluginVersion = "1.4.4";
     public static int apiVersion = 2;
     public boolean needUpdate;
     public String lastVersion;

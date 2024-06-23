@@ -16,7 +16,7 @@ public class CachedMap<K, V> {
     }
 
     public V put (K key, V value) {
-        CachedData<V> val = map.put(key, new CachedData<V>(cachedTime, cachedTimeUnit, value));
+        CachedData<V> val = map.put(key, new CachedData<>(cachedTime, cachedTimeUnit, value));
         if (val != null) return val.get();
         return null;
     }

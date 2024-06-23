@@ -41,7 +41,11 @@ public class ItemSorter extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
-		version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+		try {
+			version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+		} catch (Exception ex) { // Versions 1.20.6 on paper does not have the version in package name. This is an ugly workaround.
+			version = Bukkit.getServer().getBukkitVersion().replaceAll("-\\w*$", "");
+		}
 		versionHandler = new VersionHandler();
 		versionChecker = new VersionChecker();
 		configManager = new ConfigManager();
