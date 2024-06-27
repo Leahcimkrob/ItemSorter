@@ -263,14 +263,14 @@ public class VersionHandler {
 
             return id;
         } catch (Exception ex) {
-            //Bukkit.broadcastMessage("BRIAT");
+            Bukkit.broadcastMessage("BRIAT");
             return 0;
         }
     }
 
     // To get the value, replace by getQuartzIDNMS()
     public int getMaterialIdNBTQuartz(){
-        if (isVersionSupOrEqualThan("1_20_2")) { // good for 1.20.6
+        if (isVersionSupOrEqualThan("1_20_2")) { // good for 1.20.6 & 1.21.1
             return 9235;
         } else if (isVersionSupOrEqualThan("1_20")) {
             return 9095;
@@ -572,6 +572,9 @@ public class VersionHandler {
             }
             if (versionInt[i] > VersionHandler.version[i]) {
                 return false;
+            }
+            if (versionInt[i] < VersionHandler.version[i]) {
+                return true;
             }
         }
         return true;

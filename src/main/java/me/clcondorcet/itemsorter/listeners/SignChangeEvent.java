@@ -8,6 +8,7 @@ import me.clcondorcet.itemsorter.utils.Utilities;
 import me.clcondorcet.itemsorter.data.Deposit;
 import me.clcondorcet.itemsorter.data.Filter;
 import me.clcondorcet.itemsorter.data.System;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,6 +32,29 @@ public class SignChangeEvent implements Listener {
 
     @EventHandler
     private void onSignChange(final org.bukkit.event.block.SignChangeEvent e) {
+        // First, avoid modifying sign of already existing systems
+        Sign sign = (Sign) e.getBlock().getState();
+        FutureLocation signLoc = new FutureLocation(sign.getLocation());
+        System SignSys = DataManager.bases.get(signLoc);
+        if (SignSys != null) {
+            SignSys.refreshSignAsync(true);
+            e.setCancelled(true);
+            return;
+        }
+        Filter SignFilter = DataManager.filter.get(signLoc);
+        if (SignFilter != null) {
+            SignFilter.refreshSignAsync(true);
+            e.setCancelled(true);
+            return;
+        }
+        Deposit SignDeposit = DataManager.deposits.get(signLoc);
+        if (SignDeposit != null) {
+            SignDeposit.refreshSignAsync(true);
+            e.setCancelled(true);
+            return;
+        }
+
+        // The real event
         String tag = e.getLine(0);
         String name = e.getLine(1);
         Messages messages = ItemSorter.configManager.messages;
@@ -43,7 +67,6 @@ public class SignChangeEvent implements Listener {
                 )
             )
         ) {
-            Sign sign = (Sign) e.getBlock().getState();
             Block block;
             try {
                 block = sign.getBlock().getRelative(ItemSorter.versionHandler.getBackBlock(sign));

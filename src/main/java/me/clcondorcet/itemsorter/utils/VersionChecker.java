@@ -16,7 +16,7 @@ import java.net.URL;
  * @author clcondorcet
  */
 public class VersionChecker {
-    public static String pluginVersion = "1.4.4";
+    public static String pluginVersion = "1.4.5";
     public static int apiVersion = 2;
     public boolean needUpdate;
     public String lastVersion;

@@ -81,6 +81,7 @@ public class ItemTransferTick {
 
         containersWaitingForTransfer.clear();
         filterCache.clear();
+        filterTrashCache.clear();
     }
 
     public void transfer(Inventory inv) {
