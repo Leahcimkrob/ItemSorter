@@ -441,7 +441,9 @@ public class System implements SignRefreshable, BlockComparable {
 	}
 
 	private void addInFilters(HashMap<Integer, Filter> filters, Material mat, ArrayList<ItemStack> enter, ArrayList<Integer> toRemove) {
-		for (Filter filter : filters.values()) {
+		ArrayList<Filter> sortFilter = new ArrayList<>(filters.values());
+		sortFilter.sort(Comparator.comparingInt(o -> o.getPriority(mat)));
+		for (Filter filter : sortFilter) {
 			if (DataManager.cachedFullFilters.containsKey(new Pair<>(filter.filterID, mat))) continue;
 			try {
 				Block block = filter.loc.build().getBlock();

@@ -66,6 +66,13 @@ public class Filter implements SignRefreshable, BlockComparable {
 		}
 	}
 
+	public int getPriority(org.bukkit.Material mat) {
+		if (mat == null) return getTrashPriority();
+		me.clcondorcet.itemsorter.data.Material isoMat = materials.get(mat);
+		if (isoMat == null) return getTrashPriority();
+		return isoMat.getPriority();
+	}
+
 	public void setTrashPriorityAndIsTrash(int trashPriority, boolean isTrash, AsyncAction.ItemSorterRunnable errorCallBack) {
 		if (trashPriority != this.trashPriority && isTrash != this.isTrash) {
 			int oldTrashPriority = this.trashPriority;
