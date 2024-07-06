@@ -34,7 +34,12 @@ public class VersionHandler {
             Class<?> entityTypesClass = Class.forName("net.minecraft.world.entity.EntityTypes");
 
             Class<?> vec3DClass = Class.forName("net.minecraft.world.phys.Vec3D");
-            Object vec3D = vec3DClass.getDeclaredConstructors()[0].newInstance(0.0d, 0.0d, 0.0d);
+            Object vec3D = null;
+            try {
+                vec3D = vec3DClass.getDeclaredConstructor(double.class, double.class, double.class).newInstance(0.0d, 0.0d, 0.0d);
+            } catch (Exception exception) {
+                vec3D = vec3DClass.getDeclaredConstructors()[0].newInstance(0.0d, 0.0d, 0.0d);
+            }
             Constructor<?> spawnEntityClassConstructor = packetSpawnEntityClass.getDeclaredConstructor(
                     int.class,
                     UUID.class,
