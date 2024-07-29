@@ -17,6 +17,7 @@ public class Material {
     public final Filter filter;
     private int priority;
     public final org.bukkit.Material material;
+    private int roundRobinIndex = 0;
 
     public int getPriority() {
         return priority;
@@ -71,5 +72,13 @@ public class Material {
                 errorCallBack.run();
             });
         }
+    }
+
+    public int getRoundRobinIndex() {
+        return roundRobinIndex;
+    }
+
+    public void setRoundRobinIndex(int roundRobinIndex) {
+        this.roundRobinIndex = roundRobinIndex;
     }
 }

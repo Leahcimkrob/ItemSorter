@@ -49,28 +49,28 @@ public class ItemTransferTick {
         return false;
     }
 
-    private HashMap<System, HashMap<Material, HashMap<Integer, Filter>>> filterCache = new HashMap<>();
-    private HashMap<System, HashMap<Integer, Filter>> filterTrashCache = new HashMap<>();
+    private final HashMap<System, HashMap<Material, List<ArrayList<Filter>>>> filterCache = new HashMap<>();
+    private final HashMap<System, List<ArrayList<Filter>>> filterTrashCache = new HashMap<>();
 
-    private void addFilterCache(System system, Material mat, HashMap<Integer, Filter> filters) {
+    private void addFilterCache(System system, Material mat, List<ArrayList<Filter>> filters) {
         if (!filterCache.containsKey(system)) filterCache.put(system, new HashMap<>());
-        HashMap<Material, HashMap<Integer, Filter>> cache2 = filterCache.get(system);
+        HashMap<Material, List<ArrayList<Filter>>> cache2 = filterCache.get(system);
         cache2.put(mat, filters);
     }
 
-    public HashMap<Integer, Filter> getFilterCached(System sys, Material mat) {
+    public List<ArrayList<Filter>> getFilterCached(System sys, Material mat) {
         if (!filterCache.containsKey(sys) || !filterCache.get(sys).containsKey(mat))
-            addFilterCache(sys, mat, sys.getfilters(sys, mat));
+            addFilterCache(sys, mat, sys.getFiltersSortedByPriority(mat));
         return filterCache.get(sys).get(mat);
     }
 
-    private void addFilterTrashCache(System system, HashMap<Integer, Filter> filters) {
+    private void addFilterTrashCache(System system, List<ArrayList<Filter>> filters) {
         filterTrashCache.put(system, filters);
     }
 
-    public HashMap<Integer, Filter> getTrashCached(System sys) {
+    public List<ArrayList<Filter>> getTrashCached(System sys) {
         if (!filterTrashCache.containsKey(sys))
-            addFilterTrashCache(sys, sys.getfilters(sys));
+            addFilterTrashCache(sys, sys.getFiltersSortedByPriority(null));
         return filterTrashCache.get(sys);
     }
 

@@ -22,12 +22,24 @@ messages:
   alreadyDepositorFilter: "&4Ce block est déjà un filtre ou un dépôt !"
   error: "&4Une erreur s'est produite. Veuillez réessayer ou contacter un administrateur."
 inventory:
-  trustRemove: "&7Shift-Clique-Droit pour enlever des membres"
+  trustRemove: "&7Shift-Clic-Droit pour enlever des membres"
   trustAdd: "&7Cliquez pour ajouter aux membres"
   trustName: "&6&lMembres - &2"  #A big string may not work so be short please :D
-  filterRemove: "&7Shift-Clique-Droit pour enlever ce filtre"
   filterPriority: "&ePrioritée: "
   filterTrashPriority: "&c[Poubelle] &ePrioritée: "
+  filterLore:
+    - "&7Jetez l'item pour enlever ce filtre"
+    - "&7Pour changer la prioritée :"
+    - "&7 +5 Shift-Clic-Gauche"
+    - "&7 +1 Clic-Gauche"
+    - "&7 -1 Clic-Droit"
+    - "&7 -5 Shift-Clic-Droit"
+  filterTrashLore:
+    - "&7Pour changer la prioritée :"
+    - "&7 +5 Shift-Clic-Gauche"
+    - "&7 +1 Clic-Gauche"
+    - "&7 -1 Clic-Droit"
+    - "&7 -5 Shift-Clic-Droit"
   filterName: "&6&lFiltre - &2"
   prevEnable: "&2<<< Précédant"
   prevDisable: "&7<<< Précédant"
@@ -36,7 +48,7 @@ inventory:
   AddFilterName: "&2&l+ Ajouter"
   AddFilterLore:
     - "&7Pour ajouter un item à ce"
-    - "&7filtre, cliquer sur l'item"
+    - "&7filtre, cliquez sur l'item"
     - "&7dans votre inventaire"
   AddTrustName: "&2&l+ Ajouter"
   backName: "&cRetour"

@@ -2,27 +2,23 @@ package me.clcondorcet.itemsorter.data;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.tools.BlockComparable;
 import me.clcondorcet.itemsorter.data.tools.SignRefreshable;
 import me.clcondorcet.itemsorter.database.schemas.SystemsTable;
-import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.processing.ItemTransferTick;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import me.clcondorcet.itemsorter.utils.Pair;
-import me.clcondorcet.itemsorter.utils.Utilities;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 
 import static me.clcondorcet.itemsorter.listeners.EventsManager.autodeposits;
 import static me.clcondorcet.itemsorter.listeners.EventsManager.autofilters;
@@ -421,18 +417,17 @@ public class System implements SignRefreshable, BlockComparable {
 		for (ItemStack item : items) {
 			ArrayList<ItemStack> enter = new ArrayList<>();
 			enter.add(item);
-			
-			HashMap<Integer, Filter> filterMat = ItemTransferTick.getInstance().getFilterCached(this, item.getType());
 
-			ArrayList<Integer> toRemove = new ArrayList<>();
-			addInFilters(filterMat, item.getType(), enter, toRemove);
-			if (enter.size() == 0) {
+			List<ArrayList<Filter>> filterMat = ItemTransferTick.getInstance().getFilterCached(this, item.getType());
+
+			addInFilters(filterMat, item.getType(), enter);
+			if (enter.isEmpty()) {
 				continue;
 			}
 
-			HashMap<Integer, Filter> trash = ItemTransferTick.getInstance().getTrashCached(this);
+			List<ArrayList<Filter>> trash = ItemTransferTick.getInstance().getTrashCached(this);
 
-			addInFilters(trash, item.getType(), enter, toRemove);
+			addInFilters(trash, item.getType(), enter);
 			if (!enter.isEmpty()) {
 				returned.addAll(enter);
 			}
@@ -440,77 +435,104 @@ public class System implements SignRefreshable, BlockComparable {
 		return returned;
 	}
 
-	private void addInFilters(HashMap<Integer, Filter> filters, Material mat, ArrayList<ItemStack> enter, ArrayList<Integer> toRemove) {
-		ArrayList<Filter> sortFilter = new ArrayList<>(filters.values());
-		sortFilter.sort(Comparator.comparingInt(o -> o.getPriority(mat)));
-		for (Filter filter : sortFilter) {
-			if (DataManager.cachedFullFilters.containsKey(new Pair<>(filter.filterID, mat))) continue;
-			try {
-				Block block = filter.loc.build().getBlock();
-				ArrayList<ItemStack> resultCache = new ArrayList<>();
-				AdvancedChest aChest = AdvancedChestsDependency.getAdvancedChest(filter.loc);
-				if (aChest != null) {
-					// Advanced Chest
-					for (ItemStack itemToEnter : enter) {
-						ArrayList<ItemStack> result = AdvancedChestsDependency.addItem(aChest, itemToEnter);
-						if (!result.isEmpty()) {
-							DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
-						}
-						resultCache.addAll(result);
+	private void addInFilters(List<ArrayList<Filter>> filters, Material mat, ArrayList<ItemStack> enter) {
+		ArrayList<Pair<Filter, Integer>> toRemove = new ArrayList<>();
+
+		ItemStack unit = enter.get(0).clone();
+		unit.setAmount(1);
+		int totalAmount = enter.stream().map(ItemStack::getAmount).reduce(0, Integer::sum);
+
+		int i = 0;
+		for (ArrayList<Filter> priorityFilters : filters) {
+			i++;
+			priorityFilters.sort(Comparator.comparingInt(f -> f.getRoundRobinIndex(mat)));
+
+			while (!priorityFilters.isEmpty() && totalAmount > 0) {
+				int divided = totalAmount / priorityFilters.size();
+				int rest = totalAmount % priorityFilters.size();
+
+				for (Filter filter : (ArrayList<Filter>) priorityFilters.clone()) {
+					int resultingRest = 0;
+
+					if (filter.getRoundRobinIndex(mat) > 0) {
+						priorityFilters.forEach(f -> f.setRoundRobinIndex(f.getRoundRobinIndex(mat) == 2 ? 1 : 0, mat));
 					}
-				} else {
-					// Normal Container
-					Inventory containerInv;
-					try {
-						containerInv = ((InventoryHolder) block.getState()).getInventory();
-					} catch (Exception ex) {
-						if (!Utilities.isContainer(block.getType()) || !ItemSorter.versionHandler.isWallSign(filter.sign.build().getBlock())) {
-							toRemove.add(filter.filterID);
-						}
+
+					ArrayList<ItemStack> toEnter = new ArrayList<>();
+					int toEnterAmount = divided;
+					if (rest > 0) {
+						rest--;
+						toEnterAmount++;
+						filter.setRoundRobinIndex(2, mat);
+					} else {
+						filter.setRoundRobinIndex(1, mat);
+					}
+					int toEnterAmountCompute = toEnterAmount;
+					while (toEnterAmountCompute > 0) {
+						ItemStack toInsert = unit.clone();
+						int amount = Math.min(toInsert.getMaxStackSize(), toEnterAmountCompute);
+						toEnterAmountCompute -= amount;
+						toInsert.setAmount(amount);
+						toEnter.add(toInsert);
+					}
+
+					// Insert items in one Filter
+					if (DataManager.cachedFullFilters.containsKey(new Pair<>(filter.filterID, mat))) {
+						priorityFilters.remove(filter); // Removing from current batch
 						continue;
 					}
-					for (ItemStack itemToEnter : enter) {
-						HashMap<Integer, ItemStack> result = containerInv.addItem(itemToEnter);
-						if (!result.isEmpty()) {
-							DataManager.cachedFullFilters.put(new Pair<>(filter.filterID, itemToEnter.getType()), filter);
+					try {
+						ArrayList<ItemStack> resultItems = filter.addItemsToFilter(toEnter);
+						int resultItemAmount = resultItems.stream().map(ItemStack::getAmount).reduce(0, Integer::sum);
+						resultingRest += resultItemAmount;
+						if (resultItemAmount > 0) {
+							priorityFilters.remove(filter); // Removing from current batch
 						}
-						resultCache.addAll(result.values());
+					} catch (Filter.FilterPhysicallyRemoved ex) {
+						toRemove.add(new Pair<>(filter, i));
+						priorityFilters.remove(filter); // Removing from current batch
 					}
+
+					totalAmount -= toEnterAmount - resultingRest;
+					if (totalAmount == 0) break;
 				}
+			}
+
+			if (totalAmount == 0) {
 				enter.clear();
-				enter.addAll(resultCache);
-				if (enter.isEmpty()) break;
-			} catch (FutureLocation.WorldNotLoaded ignored) {}
-		}
-		if (!toRemove.isEmpty()) {
-			for (Integer i : toRemove) {
-				Filter fil = filters.get(i);
-				this.filters.remove(fil.filterID);
-				filters.remove(i);
-				fil.delete(true, true, true);
+				break;
 			}
 		}
-		toRemove.clear();
+		for (Pair<Filter, Integer> fp : toRemove) {
+			this.filters.remove(fp.getKey().filterID);
+			filters.get(fp.getValue()).remove(fp.getKey());
+			fp.getKey().delete(true, true, true);
+		}
+		if (totalAmount > 0) {
+			enter.clear();
+			while (totalAmount > 0) {
+				ItemStack toInsert = unit.clone();
+				int amount = Math.min(toInsert.getMaxStackSize(), totalAmount);
+				totalAmount -= amount;
+				toInsert.setAmount(amount);
+				enter.add(toInsert);
+			}
+		}
 	}
 
-	public HashMap<Integer, Filter> getfilters(System sys, Material mat){
-		HashMap<Integer, Filter> filters = new HashMap<>();
-		for(Filter filter : sys.filters.values()){
-			if(filter.getMaterials().containsKey(mat)){
-				filters.put(filter.getMaterials().get(mat).getPriority(), filter);
+	public List<ArrayList<Filter>> getFiltersSortedByPriority(Material mat) {
+		HashMap<Integer, ArrayList<Filter>> filtersByPriority = new HashMap<>();
+
+		for (Filter filter : filters.values()) {
+			if (mat != null ? filter.getMaterials().containsKey(mat) : filter.isTrash()) {
+				Integer priority = filter.getPriority(mat);
+				if (!filtersByPriority.containsKey(priority))
+					filtersByPriority.put(priority, new ArrayList<>());
+				filtersByPriority.get(priority).add(filter);
 			}
 		}
-		return filters;
-	}
-	
-	public HashMap<Integer, Filter> getfilters(System sys){
-		HashMap<Integer, Filter> filters = new HashMap<>();
-		for(Filter filter : sys.filters.values()){
-			if(filter.isTrash()){
-				filters.put(filter.getTrashPriority(), filter);
-			}
-		}
-		return filters;
+
+        return filtersByPriority.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getKey)).map(Map.Entry::getValue).collect(Collectors.toList());
 	}
 
 	public Filter getFilterWithBlock(Block block){

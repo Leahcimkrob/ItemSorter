@@ -1,6 +1,7 @@
 package me.clcondorcet.itemsorter.listeners;
 
 import me.clcondorcet.itemsorter.ItemSorter;
+import me.clcondorcet.itemsorter.config.Messages;
 import me.clcondorcet.itemsorter.data.*;
 import me.clcondorcet.itemsorter.data.System;
 import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
@@ -53,8 +54,45 @@ public class GuiEvents implements Listener {
                                     ifo.page++;
                                 } else if (e.getCurrentItem().equals(cachedItems.getPrevE())) {
                                     ifo.page--;
-                                } else if (!e.getCurrentItem().equals(cachedItems.getAdd()) && !ifo.filter.isTrash() && e.getClick().equals(ClickType.SHIFT_RIGHT)) {
-                                    ifo.filter.getMaterials().get(e.getCurrentItem().getType()).delete(true, errorHandle);
+                                } else if (!e.getCurrentItem().equals(cachedItems.getAdd())) {
+                                    switch (e.getClick()) {
+                                        case DROP:
+                                            if (!ifo.filter.isTrash())
+                                                ifo.filter.getMaterials().get(e.getCurrentItem().getType()).delete(true, errorHandle);
+                                            break;
+                                        case RIGHT:
+                                            if (ifo.filter.isTrash()) {
+                                                ifo.filter.setTrashPriority(Math.max(ifo.filter.getTrashPriority()-1, 1), errorHandle);
+                                            } else {
+                                                me.clcondorcet.itemsorter.data.Material mat = ifo.filter.getMaterials().get(e.getCurrentItem().getType());
+                                                mat.setPriority(Math.max(mat.getPriority()-1, 1), errorHandle);
+                                            }
+                                            break;
+                                        case SHIFT_RIGHT:
+                                            if (ifo.filter.isTrash()) {
+                                                ifo.filter.setTrashPriority(Math.max(ifo.filter.getTrashPriority()-5, 1), errorHandle);
+                                            } else {
+                                                me.clcondorcet.itemsorter.data.Material mat = ifo.filter.getMaterials().get(e.getCurrentItem().getType());
+                                                mat.setPriority(Math.max(mat.getPriority()-5, 1), errorHandle);
+                                            }
+                                            break;
+                                        case LEFT:
+                                            if (ifo.filter.isTrash()) {
+                                                ifo.filter.setTrashPriority(Math.min(ifo.filter.getTrashPriority()+1, Integer.MAX_VALUE), errorHandle);
+                                            } else {
+                                                me.clcondorcet.itemsorter.data.Material mat = ifo.filter.getMaterials().get(e.getCurrentItem().getType());
+                                                mat.setPriority(Math.min(mat.getPriority()+1, Integer.MAX_VALUE), errorHandle);
+                                            }
+                                            break;
+                                        case SHIFT_LEFT:
+                                            if (ifo.filter.isTrash()) {
+                                                ifo.filter.setTrashPriority(Math.min(ifo.filter.getTrashPriority()+5, Integer.MAX_VALUE), errorHandle);
+                                            } else {
+                                                me.clcondorcet.itemsorter.data.Material mat = ifo.filter.getMaterials().get(e.getCurrentItem().getType());
+                                                mat.setPriority(Math.min(mat.getPriority()+5, Integer.MAX_VALUE), errorHandle);
+                                            }
+                                            break;
+                                    }
                                 }
                                 refreshFilterInv(p, p.getOpenInventory().getTopInventory(), ifo.filter, ifo.page);
                             }
@@ -284,7 +322,9 @@ public class GuiEvents implements Listener {
                     ItemMeta meta = item.getItemMeta();
                     meta.setDisplayName(ItemSorter.configManager.messages.inv_filterPriority + filter.getMaterials().get(mat).getPriority());
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add(ItemSorter.configManager.messages.inv_filterRemove);
+                    for (String st : ItemSorter.configManager.messages.inv_filterLore) {
+                        lore.add(Messages.replaceColorCode(st));
+                    }
                     meta.setLore(lore);
                     item.setItemMeta(meta);
                     inv.setItem(o, item);
@@ -296,6 +336,11 @@ public class GuiEvents implements Listener {
             ItemStack item = new ItemStack(Material.BARRIER);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ItemSorter.configManager.messages.inv_filterTrashPriority + filter.getTrashPriority());
+            ArrayList<String> lore = new ArrayList<>();
+            for (String st : ItemSorter.configManager.messages.inv_filterTrashLore) {
+                lore.add(Messages.replaceColorCode(st));
+            }
+            meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(0, item);
             o++;

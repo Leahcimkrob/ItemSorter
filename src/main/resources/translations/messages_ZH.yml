@@ -26,9 +26,21 @@ inventory:
   trustRemove: '&7按住 Shift 键+右键单击以删除此信任'
   trustAdd: '&7点击对此玩家添加信任'
   trustName: '&6&l信任列表 - &2'
-  filterRemove: '&7按住 Shift 键+右键单击以删除此物品'
   filterPriority: '&e优先等级: '
   filterTrashPriority: '&c[垃圾桶] &e优先等级: '
+  filterLore:
+    - "&7Drop the item to remove the filter"
+    - "&7To change the priority:"
+    - "&7 +5 Shift-Left-Click"
+    - "&7 +1 Left-Click"
+    - "&7 -1 Right-Click"
+    - "&7 -5 Shift-Right-Click"
+  filterTrashLore:
+    - "&7To change the priority:"
+    - "&7 +5 Shift-Left-Click"
+    - "&7 +1 Left-Click"
+    - "&7 -1 Right-Click"
+    - "&7 -5 Shift-Right-Click"
   filterName: '&6&l仓库筛选列表 - &2'
   prevEnable: '&2<<< 上一页'
   prevDisable: '&7<<< 上一页'

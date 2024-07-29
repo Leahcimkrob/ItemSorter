@@ -12,9 +12,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author clcondorcet
@@ -47,6 +51,10 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		return true;
 	}
 
+	public static Predicate<String> startWith(String prefix) {
+		return t -> t.toLowerCase().startsWith(prefix.toLowerCase());
+	}
+
 	@Override
 	public List<String> onTabComplete(CommandSender s, Command cmd, String label, String[] args){
 		HashMap<String, String> commands = new HashMap<>();
@@ -61,9 +69,7 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		commands.put("setOwner", "itemsorter.command.setOwner");
 		//  args.lenth == 4
 		if(args.length == 4 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
-			ArrayList<String> page = new ArrayList<>();
-			page.add("p:");
-			return Utilities.searchforsimilarity(args[3], page);
+			return Stream.of("p:").filter(startWith(args[3])).collect(Collectors.toList());
 		}else if(args.length == 4 && args[0].equalsIgnoreCase("glow") && s.hasPermission(commands.get("glow")) && ItemSorter.versionHandler.isGlowAvailable()){
 			if(args[1].equalsIgnoreCase("filters")){
 				ArrayList<String> filters = new ArrayList<>();
@@ -71,15 +77,13 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 				for(Material mat : Material.values()){
 					filters.add(mat.name());
 				}
-				return Utilities.searchforsimilarity(args[3], filters);
+				return filters.stream().filter(startWith(args[3])).collect(Collectors.toList());
 			}
 		}
 
 		//  args.lenth == 3
 		if(args.length == 3 && args[0].equalsIgnoreCase("list") && s.hasPermission(commands.get("list"))){
-			ArrayList<String> page = new ArrayList<>();
-			page.add("p:");
-			return Utilities.searchforsimilarity(args[2], page);
+			return Stream.of("p:").filter(startWith(args[2])).collect(Collectors.toList());
 		}else if(args.length == 3 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
 			ArrayList<String> filters = new ArrayList<>();
 			filters.add("item");
@@ -87,87 +91,73 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 			for(Material mat : Material.values()){
 				filters.add(mat.name());
 			}
-			return Utilities.searchforsimilarity(args[2], filters);
+			return filters.stream().filter(startWith(args[2])).collect(Collectors.toList());
 		}else if(args.length == 3 && args[0].equalsIgnoreCase("deposits") && s.hasPermission(commands.get("deposits"))){
-			ArrayList<String> page = new ArrayList<>();
-			page.add("p:");
-			return Utilities.searchforsimilarity(args[2], page);
+			return Stream.of("p:").filter(startWith(args[2])).collect(Collectors.toList());
 		}else if(args.length == 3 && args[0].equalsIgnoreCase("glow") && s.hasPermission(commands.get("glow")) && ItemSorter.versionHandler.isGlowAvailable()){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[2], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[2]))
+					.collect(Collectors.toList());
 		}else if(args.length == 3 && args[0].equalsIgnoreCase("autosign") && s.hasPermission(commands.get("autosign"))){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[2], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[2]))
+					.collect(Collectors.toList());
 		}else if(args.length == 3 && args[0].equalsIgnoreCase("setOwner") && s.hasPermission(commands.get("setOwner"))){
-			ArrayList<String> players = new ArrayList<>();
-			for(Player p : Bukkit.getOnlinePlayers()){
-				players.add(p.getName());
-			}
-			return Utilities.searchforsimilarity(args[2], players);
+			return Bukkit.getOnlinePlayers().stream()
+					.filter(p -> !(s instanceof Player) || ((Player) s).canSee(p))
+					.map(HumanEntity::getName)
+					.filter(startWith(args[2]))
+					.collect(Collectors.toList());
 		}
 
 		//  args.lenth == 2
 		if(args.length == 2 && args[0].equalsIgnoreCase("list") && s.hasPermission(commands.get("list"))){
-			ArrayList<String> owners = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				owners.add(sys.getOwnerName());
-			}
-			return Utilities.searchforsimilarity(args[1], owners);
+			return DataManager.getSystems().stream()
+					.map(System::getOwnerName)
+					.filter(startWith(args[1]))
+					.collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("base") && s.hasPermission(commands.get("base"))){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[1], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[1]))
+					.collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[1], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[1]))
+					.collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("deposits") && s.hasPermission(commands.get("deposits"))){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[1], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[1]))
+					.collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("glow") && s.hasPermission(commands.get("glow")) && ItemSorter.versionHandler.isGlowAvailable()){
-			ArrayList<String> strings = new ArrayList<>();
-			strings.add("filters");
-			strings.add("base");
-			strings.add("deposits");
-			return Utilities.searchforsimilarity(args[1], strings);
+			return Stream.of("filters", "base", "deposits").filter(startWith(args[1])).collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("autosign") && s.hasPermission(commands.get("autosign"))){
-			ArrayList<String> strings = new ArrayList<>();
-			strings.add("filter");
-			strings.add("deposit");
-			strings.add("stop");
-			return Utilities.searchforsimilarity(args[1], strings);
+			return Stream.of("deposit","filter","stop").filter(startWith(args[1])).collect(Collectors.toList());
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("setOwner") && s.hasPermission(commands.get("setOwner"))){
-			ArrayList<String> bases = new ArrayList<>();
-			for(System sys : DataManager.getSystems()){
-				bases.add(sys.name);
-			}
-			return Utilities.searchforsimilarity(args[1], bases);
+			return DataManager.getSystems().stream()
+					.filter(system -> !(s instanceof Player) || system.canAccess((Player) s))
+					.map(system -> system.name)
+					.filter(startWith(args[1]))
+					.collect(Collectors.toList());
 		}
 
 		//  args.lenth == 1
 		if(args.length == 1){
-			ArrayList<String> list = new ArrayList<>();
-			for(String key : commands.keySet()){
-				if(s.hasPermission(commands.get(key))){
-					list.add(key);
-				}
-			}
-			return Utilities.searchforsimilarity(args[0], list);
+			return commands.entrySet().stream()
+					.filter(command -> s.hasPermission(command.getValue()) && command.getKey().startsWith(args[0].toLowerCase()))
+					.map(Map.Entry::getKey)
+					.collect(Collectors.toList());
 		}else{
-			return null;
+			return Collections.emptyList();
 		}
 	}
 }

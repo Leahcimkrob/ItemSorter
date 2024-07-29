@@ -1,17 +1,25 @@
 package me.clcondorcet.itemsorter.data;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.clcondorcet.itemsorter.ItemSorter;
 import me.clcondorcet.itemsorter.data.tools.BlockComparable;
 import me.clcondorcet.itemsorter.data.tools.SignRefreshable;
 import me.clcondorcet.itemsorter.database.schemas.FiltersTable;
+import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
+import me.clcondorcet.itemsorter.utils.Pair;
 import me.clcondorcet.itemsorter.utils.Utilities;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import us.lynuxcraft.deadsilenceiv.advancedchests.chest.AdvancedChest;
 
 /**
  * @author clcondorcet
@@ -25,6 +33,7 @@ public class Filter implements SignRefreshable, BlockComparable {
 	private final HashMap<org.bukkit.Material, me.clcondorcet.itemsorter.data.Material> materials = new HashMap<>();
 	private boolean isTrash;
 	private int trashPriority;
+	private int roundRobinTrashIndex = 0;
 
 	public boolean isTrash() {
 		return isTrash;
@@ -263,5 +272,62 @@ public class Filter implements SignRefreshable, BlockComparable {
 
 	public boolean checkExistsInWorld() throws FutureLocation.WorldNotLoaded {
 		return Utilities.isContainer(loc.build().getBlock().getType()) && ItemSorter.versionHandler.isWallSign(sign.build().getBlock());
+	}
+
+	public int getRoundRobinIndex(org.bukkit.Material mat) {
+		if (!isTrash()) {
+			return materials.get(mat).getRoundRobinIndex();
+		}
+		return roundRobinTrashIndex;
+	}
+
+	public void setRoundRobinIndex(int roundRobinIndex, org.bukkit.Material mat) {
+		if (!isTrash()) {
+			materials.get(mat).setRoundRobinIndex(roundRobinIndex);
+			return;
+		}
+		this.roundRobinTrashIndex = roundRobinIndex;
+	}
+
+	public ArrayList<ItemStack> addItemsToFilter(ArrayList<ItemStack> enter) throws FilterPhysicallyRemoved {
+		ArrayList<ItemStack> resultItems = new ArrayList<>();
+		try {
+			Block block = loc.build().getBlock();
+			AdvancedChest aChest = AdvancedChestsDependency.getAdvancedChest(loc);
+			if (aChest != null) {
+				// Advanced Chest
+				for (ItemStack itemToEnter : enter) {
+					ArrayList<ItemStack> result = AdvancedChestsDependency.addItem(aChest, itemToEnter);
+					if (!result.isEmpty()) {
+						DataManager.cachedFullFilters.put(new Pair<>(filterID, itemToEnter.getType()), this);
+					}
+					resultItems.addAll(result);
+				}
+			} else {
+				// Normal Container
+				Inventory containerInv;
+				try {
+					containerInv = ((InventoryHolder) block.getState()).getInventory();
+				} catch (Exception ex) {
+					if (!Utilities.isContainer(block.getType()) || !ItemSorter.versionHandler.isWallSign(sign.build().getBlock())) {
+						throw new FilterPhysicallyRemoved();
+					}
+					return enter;
+				}
+				for (ItemStack itemToEnter : enter) {
+					HashMap<Integer, ItemStack> result = containerInv.addItem(itemToEnter);
+					if (!result.isEmpty()) {
+						DataManager.cachedFullFilters.put(new Pair<>(filterID, itemToEnter.getType()), this);
+					}
+					resultItems.addAll(result.values());
+				}
+			}
+		} catch (FutureLocation.WorldNotLoaded ignored) {}
+		return resultItems;
+    }
+
+	public static class FilterPhysicallyRemoved extends Exception {
+		public FilterPhysicallyRemoved(String message) {super(message); }
+		public FilterPhysicallyRemoved() {super(); }
 	}
 }

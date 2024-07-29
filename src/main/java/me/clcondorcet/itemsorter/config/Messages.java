@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author clcondorcet
@@ -37,7 +38,8 @@ public class Messages {
     public String inv_trustRemove;
     public String inv_trustAdd;
     public String inv_trustName;
-    public String inv_filterRemove;
+    public ArrayList<String> inv_filterLore;
+    public ArrayList<String> inv_filterTrashLore;
     public String inv_filterPriority;
     public String inv_filterTrashPriority;
     public String inv_filterName;
@@ -199,7 +201,8 @@ public class Messages {
         this.inv_trustRemove = getMessageFromFile("inventory.trustRemove");
         this.inv_trustAdd = getMessageFromFile("inventory.trustAdd");
         this.inv_trustName = getMessageFromFile("inventory.trustName");
-        this.inv_filterRemove = getMessageFromFile("inventory.filterRemove");
+        this.inv_filterLore = (ArrayList<String>) getFromFile("inventory.filterLore");
+        this.inv_filterTrashLore = (ArrayList<String>) getFromFile("inventory.filterTrashLore");
         this.inv_filterPriority = getMessageFromFile("inventory.filterPriority");
         this.inv_filterTrashPriority = getMessageFromFile("inventory.filterTrashPriority");
         this.inv_filterName = getMessageFromFile("inventory.filterName");

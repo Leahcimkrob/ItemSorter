@@ -25,9 +25,21 @@ inventory:
   trustRemove: "&7Shift-Right-Click to remove this trust"
   trustAdd: "&7Click to add to trusts"
   trustName: "&6&lTrusts - &2"  #A big string may not work so be short please :D
-  filterRemove: "&7Shift-Right-Click to remove this item"
   filterPriority: "&ePriority: "
   filterTrashPriority: "&c[Trash] &ePriority: "
+  filterLore:
+    - "&7Drop the item to remove the filter"
+    - "&7To change the priority:"
+    - "&7 +5 Shift-Left-Click"
+    - "&7 +1 Left-Click"
+    - "&7 -1 Right-Click"
+    - "&7 -5 Shift-Right-Click"
+  filterTrashLore:
+    - "&7To change the priority:"
+    - "&7 +5 Shift-Left-Click"
+    - "&7 +1 Left-Click"
+    - "&7 -1 Right-Click"
+    - "&7 -5 Shift-Right-Click"
   filterName: "&6&lFilter - &2"
   prevEnable: "&2<<< Prev"
   prevDisable: "&7<<< Prev"
