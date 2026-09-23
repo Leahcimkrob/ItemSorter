@@ -1,11 +1,9 @@
 radius: 16
 verticalRadius: 80
-maxBases:
-  default: 5 #Can be bypassed by the permission: "itemsorter.unlimitedBases"
-  others: #permissions
-    - "itemsorter.vip": 10
-    - "itemsorter.vipplus": 20
-    - "itemsorter.moderator": 100
 orderChestContent: true # Sort filters after closing it (doesn't work with custom chest from AdvancedChests)
 Language: "EN"
 customsqlitelib: false # Use only if SQLite doesn't work in your machine.
+
+#Buy additional sorter
+max_sorters: 20 # Maximum number of sorters a player can have. Set to -1 for unlimited.
+price: 100000 # Price for buying additional sorters. Set to 0 for free.

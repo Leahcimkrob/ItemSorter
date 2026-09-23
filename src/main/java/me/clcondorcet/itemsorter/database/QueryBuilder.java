@@ -1,7 +1,5 @@
 package me.clcondorcet.itemsorter.database;
 
-import org.apache.commons.lang.IncompleteArgumentException;
-
 import java.util.LinkedList;
 
 /**
@@ -68,7 +66,7 @@ public class QueryBuilder {
         }
 
         public String build() {
-            if (updatedColumns.isEmpty()) throw new IncompleteArgumentException("Query builder cannot build empty update query");
+            if (updatedColumns.isEmpty()) throw new IllegalArgumentException("Query builder cannot build empty update query");
             StringBuilder query = new StringBuilder("UPDATE `" + tableName + "` SET ");
             int i = 0;
             for (ColumnWithValue cwv : updatedColumns) {

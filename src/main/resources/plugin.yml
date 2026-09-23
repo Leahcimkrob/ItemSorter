@@ -46,9 +46,14 @@ permissions:
       itemsorter.command.glow.*: true
       itemsorter.command.autosign: true
       itemsorter.command.setOwner: true
+      itemsorter.command.buy: true
 
   itemsorter.command.reload:
     description: Allow you to reload
+    default: op
+
+  itemsorter.command.buy:
+    description: Allow you to buy a new base
     default: op
 
   itemsorter.command.help:

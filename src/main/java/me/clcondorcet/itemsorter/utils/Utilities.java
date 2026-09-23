@@ -4,14 +4,20 @@ import me.clcondorcet.itemsorter.ItemSorter;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author clcondorcet
  */
 public class Utilities {
+
+    private static final Pattern MAX_BASES_PERMISSION = Pattern.compile("^itemsorter\\.maxsorter\\.(\\d+)$");
 
     /*
     public static ItemStack setNbt(ItemStack item){
@@ -45,12 +51,12 @@ public class Utilities {
     }*/
 
     public static int getMaxBases(Player p){
-        int max = ItemSorter.configManager.config.maxBases_default;
-        for(String perm : ItemSorter.configManager.config.maxBases_others.keySet()){
-            if(p.hasPermission(perm)) {
-                int newMax = ItemSorter.configManager.config.maxBases_others.get(perm);
-                if (max < newMax) {
-                    max = newMax;
+        int max = 0;
+        for (PermissionAttachmentInfo permission : p.getEffectivePermissions()) {
+            if (permission.getValue()) {
+                Matcher matcher = MAX_BASES_PERMISSION.matcher(permission.getPermission().toLowerCase(Locale.ROOT));
+                if (matcher.matches()) {
+                    max = Math.max(max, Integer.parseInt(matcher.group(1)));
                 }
             }
         }
