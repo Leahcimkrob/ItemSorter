@@ -182,6 +182,3 @@ permissions:
     description: Allow you to change the owner of a base
     default: op
 
-  itemsorter.command.buy:
-    description: Allow you to buy additional sorters
-    default: false
