@@ -6,6 +6,7 @@ import me.clcondorcet.itemsorter.data.*;
 import me.clcondorcet.itemsorter.data.System;
 import me.clcondorcet.itemsorter.dependencies.AdvancedChestsDependency;
 import me.clcondorcet.itemsorter.processing.ItemTransferTick;
+import me.clcondorcet.itemsorter.purchase.SorterPurchaseGui;
 import me.clcondorcet.itemsorter.utils.AsyncAction;
 import me.clcondorcet.itemsorter.utils.FutureLocation;
 import org.bukkit.Bukkit;
@@ -37,6 +38,10 @@ public class GuiEvents implements Listener {
 
     @EventHandler
     public void onClickInventory(InventoryClickEvent e){
+        if (SorterPurchaseGui.isPurchaseInventory(e.getInventory())) {
+            SorterPurchaseGui.handleClick(e);
+            return;
+        }
         AsyncAction.ItemSorterRunnable errorHandle = () -> {
             e.getWhoClicked().closeInventory();
             e.getWhoClicked().sendMessage(ItemSorter.prefix + ItemSorter.configManager.messages.msg_error);

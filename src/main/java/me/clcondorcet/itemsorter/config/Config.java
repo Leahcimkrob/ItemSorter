@@ -11,6 +11,8 @@ public class Config {
 
     public int radius;
     public int verticalRadius;
+    public int maxSorters;
+    public double sorterPrice;
     public boolean orderChestContent;
     public String language;
 
@@ -18,6 +20,8 @@ public class Config {
         this.radius = (int) getOrDefault(conf, "radius", source.get("radius"));
         this.verticalRadius = (int) getOrDefault(conf, "verticalRadius", source.get("verticalRadius"));
         conf.set("maxBases", null);
+        this.maxSorters = (int) getOrDefault(conf, "max_sorters", source.get("max_sorters"));
+        this.sorterPrice = ((Number) getOrDefault(conf, "price", source.get("price"))).doubleValue();
         this.orderChestContent = (boolean) getOrDefault(conf, "orderChestContent", source.get("orderChestContent"));
         this.language = (String) getOrDefault(conf, "Language", source.get("Language"));
 

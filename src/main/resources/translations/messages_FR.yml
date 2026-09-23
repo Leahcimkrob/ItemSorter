@@ -21,6 +21,11 @@ messages:
   baseCreated: "&2La base &6%name% &2a été enregistrée !"
   alreadyDepositorFilter: "&4Ce block est déjà un filtre ou un dépôt !"
   error: "&4Une erreur s'est produite. Veuillez réessayer ou contacter un administrateur."
+  buyUnavailable: "&cCet achat n'est plus disponible."
+  buyNoEconomy: "&cAucun fournisseur économique Vault n'est disponible."
+  buyNotEnoughMoney: "&cVous n'avez pas assez d'argent."
+  buyFailed: "&cL'achat a échoué. Votre argent a été remboursé."
+  buyComplete: "&aVous avez acheté %amount% trieur(s) supplémentaire(s) pour %total%."
 inventory:
   trustRemove: "&7Shift-Clic-Droit pour enlever des membres"
   trustAdd: "&7Cliquez pour ajouter aux membres"
@@ -52,6 +57,21 @@ inventory:
     - "&7dans votre inventaire"
   AddTrustName: "&2&l+ Ajouter"
   backName: "&cRetour"
+  buyName: "&6&lAcheter des ItemSorters"
+  buyInfoName: "&6&lAperçu ItemSorter"
+  buyInfoLore:
+    - "&7Trieurs créés: &e%owned%"
+    - "&7Limite actuelle: &e%limit%"
+    - "&7Achetable: &e%buyable%"
+    - "&7Limite maximale: &e%max%"
+  buyOfferName: "&6+%amount% Système(s) supplémentaire(s)"
+  buyOfferLore:
+    - "&7Systèmes supplémentaires: &e%amount%"
+    - "&7Par système: &e%price%"
+    - "&7Coût total: &e%total%"
+  buyCloseName: "&cFermer"
+  buyCloseLore:
+    - "&7Cliquez pour fermer ce menu."
 sign:
   prefix: "&6[&eItem&cSorter&6]"
   loading: "&bChargement ..."

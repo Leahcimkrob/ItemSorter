@@ -22,6 +22,11 @@ messages:
   baseCreated: "&2Base &6%name% &2wurde erstellt."
   alreadyDepositorFilter: "&4Diese Truhe ist bereits ein Deposite oder ein Filter."
   error: "&4Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an einen Administrator."
+  buyUnavailable: "&cDieser Kauf ist nicht mehr verfügbar."
+  buyNoEconomy: "&cKein Vault-Wirtschaftsanbieter ist verfügbar."
+  buyNotEnoughMoney: "&cDu hast nicht genug Geld."
+  buyFailed: "&cDer Kauf ist fehlgeschlagen. Dein Geld wurde zurückerstattet."
+  buyComplete: "&aDu hast %amount% zusätzliche(n) Sorter für %total% gekauft."
 inventory:
   trustRemove: "&7Shift-Rechts-Klick um die Erlaubnis zu entfernen"
   trustAdd: "&7Klick um die Erlaubnis hinzu zufügen."
@@ -53,6 +58,21 @@ inventory:
   - "&7um es als Filter hinzuzufügen"
   AddTrustName: "&2&lSpieler hinzufügen."
   backName: "&cZurück"
+  buyName: "&6&lItemSorter kaufen"
+  buyInfoName: "&6&lItemSorter Übersicht"
+  buyInfoLore:
+    - "&7Erstellte Sorter: &e%owned%"
+    - "&7Aktuelles Limit: &e%limit%"
+    - "&7Kaufbar: &e%buyable%"
+    - "&7Maximales Limit: &e%max%"
+  buyOfferName: "&6+%amount% Zusätzliche Systeme"
+  buyOfferLore:
+    - "&7Zusätzliche Systeme: &e%amount%"
+    - "&7Pro System: &e%price%"
+    - "&7Kosten insgesamt: &e%total%"
+  buyCloseName: "&cSchließen"
+  buyCloseLore:
+    - "&7Klicke, um dieses Menü zu schließen."
 sign:
   prefix: "&6[&eItem&cSorter&6]"
   loading: "&bWird geladen ..."

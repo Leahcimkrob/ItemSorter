@@ -36,7 +36,8 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 			DepositsCommand.DEPOSITS_COMMAND,
 			GlowCommand.GLOW_COMMAND,
 			AutoSignCommand.AUTO_SIGN_COMMAND,
-			SetOwnerCommand.SET_OWNER_COMMAND
+			SetOwnerCommand.SET_OWNER_COMMAND,
+			BuyCommand.BUY_COMMAND
 		), HelpCommand.HELP_COMMAND, "iso");
 
 	private MainCommand(String name, List<ItemSorterCommand> children, ItemSorterCommand defaultCommand, String... aliases) {
@@ -67,6 +68,7 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		commands.put("autosign", "itemsorter.command.autosign");
 		commands.put("reload", "itemsorter.command.reload");
 		commands.put("setOwner", "itemsorter.command.setOwner");
+		commands.put("buy", "itemsorter.command.buy");
 		//  args.lenth == 4
 		if(args.length == 4 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
 			return Stream.of("p:").filter(startWith(args[3])).collect(Collectors.toList());

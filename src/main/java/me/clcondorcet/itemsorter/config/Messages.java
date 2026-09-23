@@ -34,6 +34,11 @@ public class Messages {
     public String msg_baseCreated;
     public String msg_alreadyDepositorFilter;
     public String msg_error;
+    public String msg_buyUnavailable;
+    public String msg_buyNoEconomy;
+    public String msg_buyNotEnoughMoney;
+    public String msg_buyFailed;
+    public String msg_buyComplete;
 
     public String inv_trustRemove;
     public String inv_trustAdd;
@@ -51,6 +56,13 @@ public class Messages {
     public ArrayList<String> inv_AddFilterLore;
     public String inv_AddTrustName;
     public String inv_backName;
+    public String inv_buyName;
+    public String inv_buyInfoName;
+    public ArrayList<String> inv_buyInfoLore;
+    public String inv_buyOfferName;
+    public ArrayList<String> inv_buyOfferLore;
+    public String inv_buyCloseName;
+    public ArrayList<String> inv_buyCloseLore;
 
     public String sign_prefix_input_is;
     public String sign_prefix_input_isd;
@@ -195,6 +207,11 @@ public class Messages {
         this.msg_baseCreated = getMessageFromFile("messages.baseCreated");
         this.msg_alreadyDepositorFilter = getMessageFromFile("messages.alreadyDepositorFilter");
         this.msg_error = getMessageFromFile("messages.error");
+        this.msg_buyUnavailable = getMessageFromFile("messages.buyUnavailable");
+        this.msg_buyNoEconomy = getMessageFromFile("messages.buyNoEconomy");
+        this.msg_buyNotEnoughMoney = getMessageFromFile("messages.buyNotEnoughMoney");
+        this.msg_buyFailed = getMessageFromFile("messages.buyFailed");
+        this.msg_buyComplete = getMessageFromFile("messages.buyComplete");
 
 
         // Inventory
@@ -214,6 +231,13 @@ public class Messages {
         this.inv_AddFilterLore = (ArrayList<String>) getFromFile("inventory.AddFilterLore");
         this.inv_AddTrustName = getMessageFromFile("inventory.AddTrustName");
         this.inv_backName = getMessageFromFile("inventory.backName");
+        this.inv_buyName = getMessageFromFile("inventory.buyName");
+        this.inv_buyInfoName = getMessageFromFile("inventory.buyInfoName");
+        this.inv_buyInfoLore = (ArrayList<String>) getFromFile("inventory.buyInfoLore");
+        this.inv_buyOfferName = getMessageFromFile("inventory.buyOfferName");
+        this.inv_buyOfferLore = (ArrayList<String>) getFromFile("inventory.buyOfferLore");
+        this.inv_buyCloseName = getMessageFromFile("inventory.buyCloseName");
+        this.inv_buyCloseLore = (ArrayList<String>) getFromFile("inventory.buyCloseLore");
         this.sign_prefix_input_is = getMessageFromFile("sign.input_is");
         this.sign_prefix_input_isd = getMessageFromFile("sign.input_isd");
         this.sign_prefix_input_isf = getMessageFromFile("sign.input_isf");

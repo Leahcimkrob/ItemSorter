@@ -22,6 +22,11 @@ messages:
   baseCreated: '&2基地 &6%name% &2已创建!'
   alreadyDepositorFilter: '&4这个容器已经是一个存储器或仓库了!'
   error: '&4发生错误。请重试或联系管理员.'
+  buyUnavailable: '&c该购买选项已不可用。'
+  buyNoEconomy: '&c没有可用的 Vault 经济提供程序。'
+  buyNotEnoughMoney: '&c你的余额不足。'
+  buyFailed: '&c购买失败。你的金额已退还。'
+  buyComplete: '&a已购买 %amount% 个额外分拣器，共花费 %total%。'
 inventory:
   trustRemove: '&7按住 Shift 键+右键单击以删除此信任'
   trustAdd: '&7点击对此玩家添加信任'
@@ -52,6 +57,21 @@ inventory:
   - '&7点击物品栏或背包里的物品即可添加'
   AddTrustName: '&2&l+ 添加信任'
   backName: '&c返回'
+  buyName: '&6&l购买 ItemSorter'
+  buyInfoName: '&6&lItemSorter 概览'
+  buyInfoLore:
+    - '&7已创建分拣器: &e%owned%'
+    - '&7当前上限: &e%limit%'
+    - '&7可购买: &e%buyable%'
+    - '&7最大上限: &e%max%'
+  buyOfferName: '&6+%amount% 个额外系统'
+  buyOfferLore:
+    - '&7额外系统: &e%amount%'
+    - '&7每个系统: &e%price%'
+    - '&7总费用: &e%total%'
+  buyCloseName: '&c关闭'
+  buyCloseLore:
+    - '&7点击关闭此菜单。'
 sign:
   prefix: '&6[&eItem&cSorter&6]'
   loading: '&b加载中 ...'

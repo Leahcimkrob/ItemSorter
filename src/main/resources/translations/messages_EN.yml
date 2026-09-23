@@ -21,6 +21,11 @@ messages:
   baseCreated: "&2Base &6%name% &2is created!"
   alreadyDepositorFilter: "&4This container is already a deposit or a filter!"
   error: "&4An error occurred. Please try again or contact an admin."
+  buyUnavailable: "&cThat purchase is no longer available."
+  buyNoEconomy: "&cNo Vault economy provider is available."
+  buyNotEnoughMoney: "&cYou do not have enough money."
+  buyFailed: "&cThe purchase failed. Your money was refunded."
+  buyComplete: "&aPurchased %amount% additional sorter(s) for %total%."
 inventory:
   trustRemove: "&7Shift-Right-Click to remove this trust"
   trustAdd: "&7Click to add to trusts"
@@ -52,6 +57,21 @@ inventory:
     - "&7inventory."
   AddTrustName: "&2&l+ ADD"
   backName: "&cBack"
+  buyName: "&6&lBuy ItemSorters"
+  buyInfoName: "&6&lItemSorter Overview"
+  buyInfoLore:
+    - "&7Created sorters: &e%owned%"
+    - "&7Current limit: &e%limit%"
+    - "&7Purchasable: &e%buyable%"
+    - "&7Maximum limit: &e%max%"
+  buyOfferName: "&6+%amount% Additional Sorter(s)"
+  buyOfferLore:
+    - "&7Additional systems: &e%amount%"
+    - "&7Per system: &e%price%"
+    - "&7Total cost: &e%total%"
+  buyCloseName: "&cClose"
+  buyCloseLore:
+    - "&7Click to close this menu."
 sign:
   prefix: "&6[&eItem&cSorter&6]"
   loading: "&bLoading ..."
