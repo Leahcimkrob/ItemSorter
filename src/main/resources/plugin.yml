@@ -50,7 +50,6 @@ permissions:
       itemsorter.command.autosign: true
       itemsorter.command.setOwner: true
       itemsorter.command.buy: true
-      itemsorter.command.buy: true
 
   itemsorter.command.reload:
     description: Allow you to reload
@@ -185,4 +184,4 @@ permissions:
 
   itemsorter.command.buy:
     description: Allow you to buy additional sorters
-    default: true
+    default: false
