@@ -22,11 +22,6 @@ messages:
   baseCreated: '&2基地 &6%name% &2已创建!'
   alreadyDepositorFilter: '&4这个容器已经是一个存储器或仓库了!'
   error: '&4发生错误。请重试或联系管理员.'
-  buyUnavailable: '&c该购买选项已不可用。'
-  buyNoEconomy: '&c没有可用的 Vault 经济提供程序。'
-  buyNotEnoughMoney: '&c你的余额不足。'
-  buyFailed: '&c购买失败。你的金额已退还。'
-  buyComplete: '&a已购买 %amount% 个额外分拣器，共花费 %total%。'
 inventory:
   trustRemove: '&7按住 Shift 键+右键单击以删除此信任'
   trustAdd: '&7点击对此玩家添加信任'
@@ -69,6 +64,9 @@ inventory:
     - '&7额外系统: &e%amount%'
     - '&7每个系统: &e%price%'
     - '&7总费用: &e%total%'
+  buyUnlimitedName: '&c无法购买'
+  buyUnlimitedLore:
+    - '&7你已经拥有无限分拣器。'
   buyCloseName: '&c关闭'
   buyCloseLore:
     - '&7点击关闭此菜单。'
@@ -106,6 +104,7 @@ command:
       &7自动书写信息(在箱子上放置告示牌即可自动书写)'
     reload: '&6&l> &e/%cmd% &creload &7重新加载配置'
     setOwner: '&6&l> &e/%cmd% &csetowner &6<基地名称> <玩家名称> &7将你的基地送给该玩家'
+    status: '&6&l> &e/%cmd% &cstatus [玩家] &7显示分拣器数量和上限；查看他人需要权限'
     space2: ' '
     footer: ''
   list:
@@ -191,3 +190,15 @@ command:
     baseNotExist: '&4基地 &6%base% &4不存在或未加载.'
   reload:
     complete: '&2重新加载完成!'
+  status:
+    notPlayer: '&c此命令仅限玩家使用。'
+    otherHeader: '&9&l*** %player% 的 ItemSorter 概览 ***'
+    otherUsage: '&c用法：/itemsorter status <玩家>'
+    otherNotFound: '&c未找到玩家 &e%player%&c。'
+    otherError: '&c无法加载玩家 &e%player% &c的状态。'
+    lore:
+      - '&9&l*** ItemSorter 概览：***'
+      - '&7已拥有分拣器: &e%owned%'
+      - '&7当前上限: &e%limit%'
+      - '&7还可购买: &e%buyable%'
+      - '&7最大上限: &e%max%'

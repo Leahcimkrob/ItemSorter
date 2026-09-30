@@ -37,7 +37,8 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 			GlowCommand.GLOW_COMMAND,
 			AutoSignCommand.AUTO_SIGN_COMMAND,
 			SetOwnerCommand.SET_OWNER_COMMAND,
-			BuyCommand.BUY_COMMAND
+			BuyCommand.BUY_COMMAND,
+			StatusCommand.STATUS_COMMAND
 		), HelpCommand.HELP_COMMAND, "iso");
 
 	private MainCommand(String name, List<ItemSorterCommand> children, ItemSorterCommand defaultCommand, String... aliases) {
@@ -69,6 +70,7 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		commands.put("reload", "itemsorter.command.reload");
 		commands.put("setOwner", "itemsorter.command.setOwner");
 		commands.put("buy", "itemsorter.command.buy");
+		commands.put("status", "itemsorter.command.status");
 		//  args.lenth == 4
 		if(args.length == 4 && args[0].equalsIgnoreCase("filters") && s.hasPermission(commands.get("filters"))){
 			return Stream.of("p:").filter(startWith(args[3])).collect(Collectors.toList());
@@ -117,7 +119,16 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		}
 
 		//  args.lenth == 2
-		if(args.length == 2 && args[0].equalsIgnoreCase("list") && s.hasPermission(commands.get("list"))){
+		if(args.length == 2 && args[0].equalsIgnoreCase("status")
+				&& s.hasPermission(commands.get("status"))
+				&& s.hasPermission("itemsorter.command.status.other")){
+			return Arrays.stream(Bukkit.getOfflinePlayers())
+					.map(p -> p.getName())
+					.filter(Objects::nonNull)
+					.filter(startWith(args[1]))
+					.distinct()
+					.collect(Collectors.toList());
+		}else if(args.length == 2 && args[0].equalsIgnoreCase("list") && s.hasPermission(commands.get("list"))){
 			return DataManager.getSystems().stream()
 					.map(System::getOwnerName)
 					.filter(startWith(args[1]))

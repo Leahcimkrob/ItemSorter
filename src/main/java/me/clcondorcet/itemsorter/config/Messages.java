@@ -34,11 +34,6 @@ public class Messages {
     public String msg_baseCreated;
     public String msg_alreadyDepositorFilter;
     public String msg_error;
-    public String msg_buyUnavailable;
-    public String msg_buyNoEconomy;
-    public String msg_buyNotEnoughMoney;
-    public String msg_buyFailed;
-    public String msg_buyComplete;
 
     public String inv_trustRemove;
     public String inv_trustAdd;
@@ -61,6 +56,8 @@ public class Messages {
     public ArrayList<String> inv_buyInfoLore;
     public String inv_buyOfferName;
     public ArrayList<String> inv_buyOfferLore;
+    public String inv_buyUnlimitedName;
+    public ArrayList<String> inv_buyUnlimitedLore;
     public String inv_buyCloseName;
     public ArrayList<String> inv_buyCloseLore;
 
@@ -97,6 +94,7 @@ public class Messages {
     public String cmd_help_autosign;
     public String cmd_help_reload;
     public String cmd_help_setOwner;
+    public String cmd_help_status;
     public String cmd_help_space2;
     public String cmd_help_footer;
     public String cmd_reload_complete;
@@ -174,6 +172,12 @@ public class Messages {
     public String cmd_setOwner_noPlayer;
     public String cmd_setOwner_noBase;
     public String cmd_setOwner_baseNotExist;
+    public String cmd_status_notPlayer;
+    public String cmd_status_otherHeader;
+    public String cmd_status_otherUsage;
+    public String cmd_status_otherNotFound;
+    public String cmd_status_otherError;
+    public ArrayList<String> cmd_status_lore;
 
     public FileConfiguration conf;
     public FileConfiguration source;
@@ -207,11 +211,6 @@ public class Messages {
         this.msg_baseCreated = getMessageFromFile("messages.baseCreated");
         this.msg_alreadyDepositorFilter = getMessageFromFile("messages.alreadyDepositorFilter");
         this.msg_error = getMessageFromFile("messages.error");
-        this.msg_buyUnavailable = getMessageFromFile("messages.buyUnavailable");
-        this.msg_buyNoEconomy = getMessageFromFile("messages.buyNoEconomy");
-        this.msg_buyNotEnoughMoney = getMessageFromFile("messages.buyNotEnoughMoney");
-        this.msg_buyFailed = getMessageFromFile("messages.buyFailed");
-        this.msg_buyComplete = getMessageFromFile("messages.buyComplete");
 
 
         // Inventory
@@ -236,6 +235,8 @@ public class Messages {
         this.inv_buyInfoLore = (ArrayList<String>) getFromFile("inventory.buyInfoLore");
         this.inv_buyOfferName = getMessageFromFile("inventory.buyOfferName");
         this.inv_buyOfferLore = (ArrayList<String>) getFromFile("inventory.buyOfferLore");
+        this.inv_buyUnlimitedName = getMessageFromFile("inventory.buyUnlimitedName");
+        this.inv_buyUnlimitedLore = (ArrayList<String>) getFromFile("inventory.buyUnlimitedLore");
         this.inv_buyCloseName = getMessageFromFile("inventory.buyCloseName");
         this.inv_buyCloseLore = (ArrayList<String>) getFromFile("inventory.buyCloseLore");
         this.sign_prefix_input_is = getMessageFromFile("sign.input_is");
@@ -272,6 +273,7 @@ public class Messages {
         this.cmd_help_autosign = getMessageFromFile("command.help.autosign");
         this.cmd_help_reload = getMessageFromFile("command.help.reload");
         this.cmd_help_setOwner = getMessageFromFile("command.help.setOwner");
+        this.cmd_help_status = getMessageFromFile("command.help.status");
         this.cmd_help_space2 = getMessageFromFile("command.help.space2");
         this.cmd_help_footer = getMessageFromFile("command.help.footer");
 
@@ -357,6 +359,12 @@ public class Messages {
         this.cmd_setOwner_noPlayer = getMessageFromFile("command.setOwner.noPlayer");
         this.cmd_setOwner_noBase = getMessageFromFile("command.setOwner.noBase");
         this.cmd_setOwner_baseNotExist = getMessageFromFile("command.setOwner.baseNotExist");
+        this.cmd_status_notPlayer = getMessageFromFile("command.status.notPlayer");
+        this.cmd_status_otherHeader = getMessageFromFile("command.status.otherHeader");
+        this.cmd_status_otherUsage = getMessageFromFile("command.status.otherUsage");
+        this.cmd_status_otherNotFound = getMessageFromFile("command.status.otherNotFound");
+        this.cmd_status_otherError = getMessageFromFile("command.status.otherError");
+        this.cmd_status_lore = (ArrayList<String>) getFromFile("command.status.lore");
 
         try {
             ItemSorter.configManager.saveConfig("messages_" + ItemSorter.configManager.config.language.toUpperCase() + ".yml", new File(ItemSorter.getInstance().getDataFolder(), "translations"));

@@ -50,6 +50,8 @@ permissions:
       itemsorter.command.autosign: true
       itemsorter.command.setOwner: true
       itemsorter.command.buy: true
+      itemsorter.command.status: true
+      itemsorter.command.status.other: true
 
   itemsorter.command.reload:
     description: Allow you to reload
@@ -182,6 +184,10 @@ permissions:
     description: Allow you to change the owner of a base
     default: op
 
-  itemsorter.command.buy:
-    description: Allow you to buy additional sorters
-    default: false
+  itemsorter.command.status:
+    description: Allow you to see the how many Sorter you have and how many you can buy
+    default: true
+
+  itemsorter.command.status.other:
+    description: Allow you to see another player's ItemSorter status
+    default: op

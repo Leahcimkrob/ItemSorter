@@ -21,11 +21,6 @@ messages:
   baseCreated: "&2La base &6%name% &2a été enregistrée !"
   alreadyDepositorFilter: "&4Ce block est déjà un filtre ou un dépôt !"
   error: "&4Une erreur s'est produite. Veuillez réessayer ou contacter un administrateur."
-  buyUnavailable: "&cCet achat n'est plus disponible."
-  buyNoEconomy: "&cAucun fournisseur économique Vault n'est disponible."
-  buyNotEnoughMoney: "&cVous n'avez pas assez d'argent."
-  buyFailed: "&cL'achat a échoué. Votre argent a été remboursé."
-  buyComplete: "&aVous avez acheté %amount% trieur(s) supplémentaire(s) pour %total%."
 inventory:
   trustRemove: "&7Shift-Clic-Droit pour enlever des membres"
   trustAdd: "&7Cliquez pour ajouter aux membres"
@@ -69,6 +64,9 @@ inventory:
     - "&7Systèmes supplémentaires: &e%amount%"
     - "&7Par système: &e%price%"
     - "&7Coût total: &e%total%"
+  buyUnlimitedName: "&cAchat indisponible"
+  buyUnlimitedLore:
+    - "&7Vous avez déjà des trieurs illimités."
   buyCloseName: "&cFermer"
   buyCloseLore:
     - "&7Cliquez pour fermer ce menu."
@@ -103,6 +101,7 @@ command:
     autosign: "&6&l> &e/%cmd% &cautosign &6<filter/deposit/stop> <NomDeBase> &7Placer les panneaux rapidement"
     reload: "&6&l> &e/%cmd% &creload &7Recharge les fichiers de configurations"
     setOwner: "&6&l> &e/%cmd% &csetOwner &6<NomDeBase> <pseudo> &7Change le propriétaire d'une base"
+    status: "&6&l> &e/%cmd% &cstatus [joueur] &7Affiche le nombre de trieurs et la limite ; permission requise pour les autres"
     space2: " "
     footer: ""
   list:
@@ -188,3 +187,15 @@ command:
     baseNotExist: "&4La base &6%base% &4n'existe pas ou n'est pas chargée."
   reload:
     complete: "&2Configurations rechargées !"
+  status:
+    notPlayer: "&cCette commande est réservée aux joueurs."
+    otherHeader: "&9&l*** Aperçu ItemSorter de &cjoueur : %player%&9&l ***"
+    otherUsage: "&cUtilisation : /itemsorter status <joueur>"
+    otherNotFound: "&cLe joueur &e%player% &cn'a pas été trouvé."
+    otherError: "&cImpossible de charger le statut de &e%player%&c."
+    lore:
+      - "&9&l*** Aperçu ItemSorter : ***"
+      - "&7Trieurs possédés: &e%owned%"
+      - "&7Limite actuelle: &e%limit%"
+      - "&7Encore achetable: &e%buyable%"
+      - "&7Limite maximale: &e%max%"

@@ -22,11 +22,6 @@ messages:
   baseCreated: "&2Base &6%name% &2wurde erstellt."
   alreadyDepositorFilter: "&4Diese Truhe ist bereits ein Deposite oder ein Filter."
   error: "&4Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an einen Administrator."
-  buyUnavailable: "&cDieser Kauf ist nicht mehr verfügbar."
-  buyNoEconomy: "&cKein Vault-Wirtschaftsanbieter ist verfügbar."
-  buyNotEnoughMoney: "&cDu hast nicht genug Geld."
-  buyFailed: "&cDer Kauf ist fehlgeschlagen. Dein Geld wurde zurückerstattet."
-  buyComplete: "&aDu hast %amount% zusätzliche(n) Sorter für %total% gekauft."
 inventory:
   trustRemove: "&7Shift-Rechts-Klick um die Erlaubnis zu entfernen"
   trustAdd: "&7Klick um die Erlaubnis hinzu zufügen."
@@ -70,6 +65,9 @@ inventory:
     - "&7Zusätzliche Systeme: &e%amount%"
     - "&7Pro System: &e%price%"
     - "&7Kosten insgesamt: &e%total%"
+  buyUnlimitedName: "&cKauf nicht möglich"
+  buyUnlimitedLore:
+    - "&7Du hast bereits unbegrenzte Sorter."
   buyCloseName: "&cSchließen"
   buyCloseLore:
     - "&7Klicke, um dieses Menü zu schließen."
@@ -104,6 +102,7 @@ command:
     autosign: "&6&l> &e/%cmd% &cautosign &6<filter/deposit/stop> <baseName> &7Plaziere Schilder schneller."
     reload: "&6&l> &e/%cmd% &creload &7Reload der Config."
     setOwner: "&6&l> &e/%cmd% &csetOwner &6<baseName> <playerName> &7Setze einen neuen Besitzer für die Base-Truhe."
+    status: "&6&l> &e/%cmd% &cstatus [Spieler] &7Zeigt ItemSorter-Anzahl und Limit; mit Berechtigung auch für andere."
     space2: " "
     footer: ""
   list:
@@ -189,3 +188,15 @@ command:
     baseNotExist: "&cDie Base-Truhe &6%base% &cexestiert nicht oder wurde nicht geladen."
   reload:
     complete: "&2Reload fertig."
+  status:
+    notPlayer: "&cDieser Befehl kann nur von Spielern verwendet werden."
+    otherHeader: "&9&l*** ItemSorter Übersicht von &cSpieler: %player%&9&l ***"
+    otherUsage: "&cVerwendung: /itemsorter status <Spieler>"
+    otherNotFound: "&cSpieler &e%player% &cwurde nicht gefunden."
+    otherError: "&cDer Status von &e%player% &ckonnte nicht geladen werden."
+    lore:
+      - "&9&l*** ItemSorter Übersicht: ***"
+      - "&7Eigene Sorter: &e%owned%"
+      - "&7Aktuelles Limit: &e%limit%"
+      - "&7Noch kaufbar: &e%buyable%"
+      - "&7Maximales Limit: &e%max%"

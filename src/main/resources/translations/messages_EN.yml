@@ -21,11 +21,6 @@ messages:
   baseCreated: "&2Base &6%name% &2is created!"
   alreadyDepositorFilter: "&4This container is already a deposit or a filter!"
   error: "&4An error occurred. Please try again or contact an admin."
-  buyUnavailable: "&cThat purchase is no longer available."
-  buyNoEconomy: "&cNo Vault economy provider is available."
-  buyNotEnoughMoney: "&cYou do not have enough money."
-  buyFailed: "&cThe purchase failed. Your money was refunded."
-  buyComplete: "&aPurchased %amount% additional sorter(s) for %total%."
 inventory:
   trustRemove: "&7Shift-Right-Click to remove this trust"
   trustAdd: "&7Click to add to trusts"
@@ -69,6 +64,9 @@ inventory:
     - "&7Additional systems: &e%amount%"
     - "&7Per system: &e%price%"
     - "&7Total cost: &e%total%"
+  buyUnlimitedName: "&cPurchases unavailable"
+  buyUnlimitedLore:
+    - "&7You already have unlimited sorters."
   buyCloseName: "&cClose"
   buyCloseLore:
     - "&7Click to close this menu."
@@ -103,6 +101,7 @@ command:
     autosign: "&6&l> &e/%cmd% &cautosign &6<filter/deposit/stop> <baseName> &7Place sign faster"
     reload: "&6&l> &e/%cmd% &creload &7Reload the configurations"
     setOwner: "&6&l> &e/%cmd% &csetOwner &6<baseName> <playerName> &7Set a new owner for a base"
+    status: "&6&l> &e/%cmd% &cstatus [player] &7Show an ItemSorter's count and limit; others require permission"
     space2: " "
     footer: ""
   list:
@@ -188,3 +187,15 @@ command:
     baseNotExist: "&4The base &6%base% &4doesn't exist or is not loaded."
   reload:
     complete: "&2Reload complete!"
+  status:
+    notPlayer: "&cThis command can only be used by a player."
+    otherHeader: "&9&l*** ItemSorter overview for &cplayer: %player%&9&l ***"
+    otherUsage: "&cUsage: /itemsorter status <player>"
+    otherNotFound: "&cPlayer &e%player% &cwas not found."
+    otherError: "&cCould not load the status of &e%player%&c."
+    lore:
+      - "&9&l*** ItemSorter Overview: ***"
+      - "&7Owned: &e%owned%"
+      - "&7Current limit: &e%limit%"
+      - "&7Purchasable: &e%buyable%"
+      - "&7Maximum limit: &e%max%"

@@ -38,6 +38,12 @@ public class DataManager {
         return new ArrayList<>(systems.values());
     }
 
+    public static Collection<System> getAllSystems() {
+        ArrayList<System> allSystems = new ArrayList<>(systems.values());
+        allSystems.addAll(notLoadedSystems.values());
+        return allSystems;
+    }
+
     public static Collection<System> getLoadingSystems() {
         return new ArrayList<>(loadingSystems);
     }

@@ -31,6 +31,7 @@ public class HelpCommand extends ItemSorterCommand {
         sendBasePermhs(s, s.hasPermission("itemsorter.command.autosign"), msg.cmd_help_autosign.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " autosign ");
         sendBasePermhs(s, s.hasPermission("itemsorter.command.reload"), msg.cmd_help_reload.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " reload");
         sendBasePermhs(s, s.hasPermission("itemsorter.command.setowner"), msg.cmd_help_setOwner.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " setOwner ");
+        sendBasePermhs(s, s.hasPermission("itemsorter.command.status"), msg.cmd_help_status.replaceAll("%cmd%", label), msg.cmd_help_hover, "/" + label + " status");
         sendBase(s, msg.cmd_help_space2);
         sendBase(s, msg.cmd_help_footer);
     }
