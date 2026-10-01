@@ -1,7 +1,6 @@
 package me.clcondorcet.itemsorter.listeners;
 
 import me.clcondorcet.itemsorter.ItemSorter;
-import me.clcondorcet.itemsorter.data.DataManager;
 import me.clcondorcet.itemsorter.utils.VersionChecker;
 import me.clcondorcet.itemsorter.database.migrations.MigrationsManager;
 import org.bukkit.event.EventHandler;
@@ -15,7 +14,6 @@ public class JoinEvent implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        DataManager.registerOnlinePlayer(e.getPlayer().getName());
         if (!MigrationsManager.migrationsDone) {
             e.getPlayer().kickPlayer(ItemSorter.prefix + "§cMigrations are not done yet. Please wait and retry later.");
         }

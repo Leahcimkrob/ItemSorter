@@ -122,13 +122,7 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		if(args.length == 2 && args[0].equalsIgnoreCase("status")
 				&& s.hasPermission(commands.get("status"))
 				&& s.hasPermission("itemsorter.command.status.other")){
-			Set<String> statusPlayers = new HashSet<>();
-			statusPlayers.addAll(DataManager.getOnlinePlayerNames());
-			statusPlayers.addAll(DataManager.getKnownOwnerNames());
-			return statusPlayers.stream()
-					.filter(startWith(args[1]))
-					.distinct()
-					.collect(Collectors.toList());
+			return DataManager.getStatusPlayerNames(args[1]);
 		}else if(args.length == 2 && args[0].equalsIgnoreCase("list") && s.hasPermission(commands.get("list"))){
 			return DataManager.getSystems().stream()
 					.map(System::getOwnerName)

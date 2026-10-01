@@ -178,6 +178,7 @@ public class System implements SignRefreshable, BlockComparable {
 				ItemSorter.getInstance().getLogger().warning("Owner UUID ('" + finalUuid_string + "') of base '" + this.name + "' failed to update in the database. Reverting to initial value -> '" + finalOwnerUUIDNow + "'");
 			});
 		}
+		DataManager.refreshOwnerNames();
 	}
 
 	protected boolean addTrusted(Trusted trust) {

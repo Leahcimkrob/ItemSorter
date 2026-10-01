@@ -13,7 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +34,8 @@ public class DataManager {
     private static final HashMap<Integer, System> notLoadedSystems = new HashMap<>(); // System is in an unloaded map
     private static final ArrayList<System> loadingSystems = new ArrayList<>(); // System is under loading (async sql)
     private static final Set<String> knownOwnerNames = ConcurrentHashMap.newKeySet();
-    private static final Set<String> onlinePlayerNames = ConcurrentHashMap.newKeySet();
+    private static volatile List<String> statusPlayerNames = Collections.emptyList();
+    private static volatile boolean statusPlayerNamesDirty = true;
     public static final HashMap<String, ArrayList<System>> systemToCheck = new HashMap<>();
     public static CachedItems cachedItems;
     public static final HashMap<Player, InFilterObject> inFilter = new HashMap<>();
@@ -48,30 +52,46 @@ public class DataManager {
         return allSystems;
     }
 
-    public static Set<String> getKnownOwnerNames() {
-        return knownOwnerNames;
-    }
-
     public static void registerOwnerName(String ownerName) {
         if (ownerName != null) {
-            knownOwnerNames.add(ownerName);
+            if (knownOwnerNames.add(ownerName)) {
+                statusPlayerNamesDirty = true;
+            }
         }
     }
 
-    public static Set<String> getOnlinePlayerNames() {
-        return onlinePlayerNames;
+    public static void refreshOwnerNames() {
+        Set<String> ownerNames = ConcurrentHashMap.newKeySet();
+        for (System system : getAllSystems()) {
+            if (system.getOwnerName() != null) {
+                ownerNames.add(system.getOwnerName());
+            }
+        }
+        knownOwnerNames.clear();
+        knownOwnerNames.addAll(ownerNames);
+        statusPlayerNamesDirty = true;
     }
 
-    public static void registerOnlinePlayer(String playerName) {
-        if (playerName != null) {
-            onlinePlayerNames.add(playerName);
+    public static List<String> getStatusPlayerNames(String prefix) {
+        if (statusPlayerNamesDirty) {
+            synchronized (DataManager.class) {
+                if (statusPlayerNamesDirty) {
+                    ArrayList<String> snapshot = new ArrayList<>(knownOwnerNames);
+                    snapshot.sort(String.CASE_INSENSITIVE_ORDER);
+                    statusPlayerNames = Collections.unmodifiableList(snapshot);
+                    statusPlayerNamesDirty = false;
+                }
+            }
         }
-    }
 
-    public static void unregisterOnlinePlayer(String playerName) {
-        if (playerName != null) {
-            onlinePlayerNames.remove(playerName);
+        String normalizedPrefix = prefix.toLowerCase(Locale.ROOT);
+        ArrayList<String> matches = new ArrayList<>();
+        for (String name : statusPlayerNames) {
+            if (name.toLowerCase(Locale.ROOT).startsWith(normalizedPrefix)) {
+                matches.add(name);
+            }
         }
+        return matches;
     }
 
     public static Collection<System> getLoadingSystems() {
