@@ -14,7 +14,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,6 +30,8 @@ public class DataManager {
     public static final HashMap<FutureLocation, Filter> filter = new HashMap<>();
     private static final HashMap<Integer, System> notLoadedSystems = new HashMap<>(); // System is in an unloaded map
     private static final ArrayList<System> loadingSystems = new ArrayList<>(); // System is under loading (async sql)
+    private static final Set<String> knownOwnerNames = ConcurrentHashMap.newKeySet();
+    private static final Set<String> onlinePlayerNames = ConcurrentHashMap.newKeySet();
     public static final HashMap<String, ArrayList<System>> systemToCheck = new HashMap<>();
     public static CachedItems cachedItems;
     public static final HashMap<Player, InFilterObject> inFilter = new HashMap<>();
@@ -44,6 +48,32 @@ public class DataManager {
         return allSystems;
     }
 
+    public static Set<String> getKnownOwnerNames() {
+        return knownOwnerNames;
+    }
+
+    public static void registerOwnerName(String ownerName) {
+        if (ownerName != null) {
+            knownOwnerNames.add(ownerName);
+        }
+    }
+
+    public static Set<String> getOnlinePlayerNames() {
+        return onlinePlayerNames;
+    }
+
+    public static void registerOnlinePlayer(String playerName) {
+        if (playerName != null) {
+            onlinePlayerNames.add(playerName);
+        }
+    }
+
+    public static void unregisterOnlinePlayer(String playerName) {
+        if (playerName != null) {
+            onlinePlayerNames.remove(playerName);
+        }
+    }
+
     public static Collection<System> getLoadingSystems() {
         return new ArrayList<>(loadingSystems);
     }
@@ -57,6 +87,9 @@ public class DataManager {
         bases.put(sys.sign, sys);
         sys.loaded = true;
         systems.put(sys.systemID, sys);
+        if (sys.getOwnerName() != null) {
+            knownOwnerNames.add(sys.getOwnerName());
+        }
     }
 
     public static void addLoadingSystem(System sys) {
@@ -80,6 +113,7 @@ public class DataManager {
     public static void setNotLoadedSystem(System system) {
         removeSystem(system);
         loadingSystems.remove(system);
+        registerOwnerName(system.getOwnerName());
         bases.put(system.baseLoc, system);
         bases.put(system.sign, system);
         notLoadedSystems.put(system.systemID, system);

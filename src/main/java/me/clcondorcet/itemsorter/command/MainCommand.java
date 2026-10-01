@@ -122,9 +122,10 @@ public class MainCommand extends CommandDispatcher implements CommandExecutor, T
 		if(args.length == 2 && args[0].equalsIgnoreCase("status")
 				&& s.hasPermission(commands.get("status"))
 				&& s.hasPermission("itemsorter.command.status.other")){
-			return Arrays.stream(Bukkit.getOfflinePlayers())
-					.map(p -> p.getName())
-					.filter(Objects::nonNull)
+			Set<String> statusPlayers = new HashSet<>();
+			statusPlayers.addAll(DataManager.getOnlinePlayerNames());
+			statusPlayers.addAll(DataManager.getKnownOwnerNames());
+			return statusPlayers.stream()
 					.filter(startWith(args[1]))
 					.distinct()
 					.collect(Collectors.toList());

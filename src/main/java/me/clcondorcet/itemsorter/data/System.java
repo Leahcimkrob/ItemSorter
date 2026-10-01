@@ -132,6 +132,7 @@ public class System implements SignRefreshable, BlockComparable {
 	}
 
 	public void setOwner(String p, UUID uuid) {
+		DataManager.registerOwnerName(p);
 		UUID ownerUUIDNow = null;
 		if (ownerUUID != null) ownerUUIDNow = UUID.fromString(ownerUUID.toString());
 		String ownerNameNow = this.ownerName;
